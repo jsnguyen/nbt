@@ -1,15 +1,37 @@
 <!DOCTYPE html>
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 <meta content="utf-8" http-equiv="encoding">
+<link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
+<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+<link rel="icon" href="favicon.ico" type="image/x-icon" />
 <html>
 
   <head>
     <title>Nothing But Time</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
   </head>
 
   <canvas id="canvas"> </canvas>
   <script src="update.js"></script>
+  <input type="button" id="script" name="scriptbutton" value="Run Script" onclick="getLatestJPG()" />
+
+  <table>
+    <tr>
+      <th>Focal Ratio</th>
+      <th>Shutter Speed</th>
+      <th>ISO</th>
+      <th>Battery</th>
+      <th>Available Shots</th>
+      <th>Lightmeter</th>
+    </tr>
+    <tr>
+      <td> 1.8 </td>
+      <td> 0.3 </td>
+      <td> 400 </td>
+      <td> 100% </td>
+      <td> 200 </td>
+      <td> 0 </td>
+    </tr>
+  </table>
 
 </html>

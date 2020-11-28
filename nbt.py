@@ -39,9 +39,9 @@ def main():
     shutter_speed = '--get-config shutter-speed'
     iso = '--get-config iso'
 
-    battery_status = '--get-config batterystatus'
-    battery_status = '--get-config availableshots'
-    battery_status = '--get-config lightmeter'
+    batterystatus = '--get-config batterystatus'
+    availableshots = '--get-config availableshots'
+    lightmeter = '--get-config lightmeter'
 
     force_overwrite = '--force-overwrite'
 
@@ -65,9 +65,16 @@ def main():
         start_time = time.time()
 
         filename = '--filename='
-        save_name = '{}_{}.NEF'.format(save_prefix, str(index).zfill(4))
+        print_raw_save_name = '{}_{}.NEF'.format(save_prefix, str(index).zfill(4))
+        print_jpg_save_name = '{}_{}.JPG'.format(save_prefix, str(index).zfill(4))
+
+        raw_save_name = '{}_{}.nef'.format(save_prefix, str(index).zfill(4))
+        jpg_save_name = '{}_{}.jpg'.format(save_prefix, str(index).zfill(4))
+
+        save_name = '{}_{}.%C'.format(save_prefix, str(index).zfill(4))
         full_save_path = os.path.join(save_dir,save_name)
-        print('{}/{} Saving to: {}'.format(index+1,n_frames,full_save_path))
+
+        print('{}/{} Saving files to: {}/{} {}/{}'.format(index+1, n_frames, save_dir, print_raw_save_name, save_dir, print_jpg_save_name))
 
         take_photo_command = [gphoto2, capture_image_and_download, filename+full_save_path, force_overwrite]
         process = subprocess.Popen(take_photo_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -93,6 +100,11 @@ def main():
         if remaining_time < 0:
             print('Behind schedule by {:.3f} seconds'.format(delta_time-interval))
             remaining_time = 0
+
+        # make the file uppercase
+        # print('Renaming files...')
+        os.rename( os.path.join(save_dir, raw_save_name), os.path.join(save_dir, raw_save_name.upper()) )
+        os.rename( os.path.join(save_dir, jpg_save_name), os.path.join(save_dir, jpg_save_name.upper()) )
 
         print('Waiting... Estimated time remaining: {} seconds...'.format((unit_multiplier*args.timelapse_time)-((index+1)*interval)))
         time.sleep(remaining_time)
