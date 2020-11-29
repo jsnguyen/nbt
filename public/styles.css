@@ -17,7 +17,7 @@ html, body {
 
 canvas {
   padding: 0;
-  margin-top: 2%;
+  margin-top: auto;
   margin-bottom: 2%;
   margin-left: auto;
   margin-right: auto;
@@ -32,11 +32,12 @@ table {
   margin-bottom: 2%;
   margin-left: auto;
   margin-right: auto;
-  width: 80%;
+  width: 60%;
   border:none;
   border-collapse: collapse;
   background-color: #778899;
-  border-radius: 25px;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
 }
 
 th, td {
@@ -45,13 +46,161 @@ th, td {
   vertical-align: middle;
   border-left: 1px solid #FFFFFF;
   border-right: 1px solid #FFFFFF;
-  padding: 10px;
+  padding: 4px;
 }
 
 th:first-child, td:first-child {
-    border-left: none;
+  border-left: none;
 }
 
 th:last-child, td:last-child {
-    border-right: none;
+  border-right: none;
+}
+
+#myProgress {
+  margin: auto;
+  width: 60%;
+  background-color: #ddd;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+#myBar {
+  width: 0%;
+  height: 15px;
+  background-color: #008000;
+  color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.percentage {
+  float: left;
+  text-align: left;
+  width: calc(100%/3);
+}
+
+.time{
+  float: left;
+  text-align: center;
+  width: calc(100%/3);
+}
+
+
+.number {
+  float: left;
+  text-align: right;
+  width: calc(100%/3);
+}
+
+.progressIndicators{
+  margin-top: 2%;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+  width: 60%;
+}
+
+.settings{
+  margin-top: 2%;
+  margin-bottom: auto;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 60%;
+}
+
+#timelapseTime {
+  margin: auto;
+  display: block;
+}
+
+#clipLength {
+  margin: auto;
+  display: block;
+}
+
+#submit{
+  margin: auto;
+  display: block;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  -webkit-animation-name: fadeIn; /* Fade in the background */
+  -webkit-animation-duration: 0.4s;
+  animation-name: fadeIn;
+  animation-duration: 0.4s
+}
+
+/* Modal Content */
+.modal-content {
+  position: fixed;
+  bottom: 0;
+  background-color: #fefefe;
+  width: 100%;
+  -webkit-animation-name: slideIn;
+  -webkit-animation-duration: 0.4s;
+  animation-name: slideIn;
+  animation-duration: 0.4s
+}
+
+/* The Close Button */
+.close {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-header {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+
+.modal-body {padding: 2px 16px;}
+
+.modal-footer {
+  padding: 2px 16px;
+  background-color: #5cb85c;
+  color: white;
+}
+/* Add Animation */
+@-webkit-keyframes slideIn {
+  from {bottom: -300px; opacity: 0}
+  to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+  from {bottom: -300px; opacity: 0}
+  to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+  from {opacity: 0}
+  to {opacity: 1}
+}
+
+@keyframes fadeIn {
+  from {opacity: 0}
+  to {opacity: 1}
 }

@@ -13,7 +13,16 @@
 
   <canvas id="canvas"> </canvas>
   <script src="update.js"></script>
-  <input type="button" id="script" name="scriptbutton" value="Run Script" onclick="getLatestJPG()" />
+
+  <div class="progressIndicators">
+    <div class="percentage">21%</div>
+    <div class="time">5s</div>
+    <div class="number">1 of 100</div>
+  </div>
+
+  <div id="myProgress">
+    <div id="myBar"></div>
+  </div>
 
   <table>
     <tr>
@@ -33,5 +42,33 @@
       <td> 0 </td>
     </tr>
   </table>
+
+
+  <input type="button" id="script" name="scriptbutton" value="Run Script" onclick="getLatestJPG()" />
+  <button onclick="move()">Click Me</button>
+
+  <!-- Trigger/Open The Modal -->
+  <button id="myBtn">Open Modal</button>
+
+  <!-- The Modal -->
+  <div id="myModal" class="modal">
+
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="close">&times;</span>
+        <h2>Modal Header</h2>
+      </div>
+      <div class="modal-body">
+        <p>Some text in the Modal Body</p>
+        <p>Some other text...</p>
+      </div>
+      <div class="modal-footer">
+        <h3>Modal Footer</h3>
+      </div>
+    </div>
+
+  </div>
+
 
 </html>
