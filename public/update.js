@@ -13,7 +13,6 @@ function getLatestJPG() {
 
 function main(){
 
-
   var timeoutPeriod = 1000
   var x=0, y=0
   var img = new Image()
@@ -59,8 +58,6 @@ function main(){
       }
     }
   });
-
-
 
 }
 
