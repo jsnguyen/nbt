@@ -24,6 +24,7 @@
     <div id="myBar"></div>
   </div>
 
+  <!--
   <table>
     <tr>
       <th>Focal Ratio</th>
@@ -42,26 +43,78 @@
       <td> 0 </td>
     </tr>
   </table>
+  -->
 
+  <div id="cameraSettings" class="settingsRow">
+    <div class="setting">50mm</div>
+    <div class="setting">f1.8</div>
+    <div class="setting">ISO 400</div>
+    <div class="setting">1/4000</div>
+    <button id="timelapseSettingsButton" class="timelapseSettingsButton">Settings</button>
+  </div>
+
+
+
+  <!--
+  <div id="timelapseSettings" class="cardRow">
+    <div class="card">
+      <div class="cardHeader">Total Timelapse Time</div>
+      <div class="cardFooter">10s</div>
+    </div>
+    <div class="card">
+      <div class="cardHeader">Total Number of Shots</div>
+      <div class="cardFooter">100</div>
+    </div>
+    <div class="card">
+      <div class="cardHeader">Interval</div>
+      <div class="cardFooter">1s</div>
+    </div>
+    <div class="card">
+      <div class="cardHeader">Frames per Second</div>
+      <div class="cardFooter">24</div>
+    </div>
+  </div>
+  -->
+
+  <!--
+  <div id="cameraSettings" class="cardRow" style="display: none;">
+    <div class="card">
+      <div class="cardFooter">50mm</div>
+    </div>
+    <div class="card">
+      <div class="cardFooter">f1.8</div>
+    </div>
+    <div class="card">
+      <div class="cardFooter">ISO 400</div>
+    </div>
+    <div class="card">
+      <div class="cardFooter">SS 1/4000</div>
+    </div>
+  </div>
+  -->
 
   <input type="button" id="script" name="scriptbutton" value="Run Script" onclick="getLatestJPG()" />
   <button onclick="move()">Click Me</button>
 
-  <!-- Trigger/Open The Modal -->
-  <button id="myBtn">Open Modal</button>
 
-  <!-- The Modal -->
   <div id="myModal" class="modal">
 
-    <!-- Modal content -->
     <div class="modal-content">
+
       <div class="modal-header">
         <span class="close">&times;</span>
-          <div id="settings">Settings</div>
+        <div id="settings">Settings</div>
       </div>
+
       <div class="modal-body">
-        <div> Value Value</div>
+        <div id="timelapseSettings" class="settingsRow">
+          <div class="setting">10 sec</div>
+          <div class="setting">5 spf</div>
+          <div class="setting">100 f</div>
+          <div class="setting">24 fps</div>
+        </div>
       </div>
+
     </div>
 
   </div>

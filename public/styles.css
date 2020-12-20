@@ -213,3 +213,50 @@ th:last-child, td:last-child {
   margin: 1%;
   color: #FFFFFF;
 }
+
+.cardRow{
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  width: 80%;
+}
+
+.card {
+  display: block;
+  width: 20%;
+  margin: 10px;
+}
+
+.cardHeader {
+  padding: 10px;
+  text-align: center;
+  margin: 0 auto;
+  background-color: #2F4F4F;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.cardFooter {
+  padding: 10px;
+  text-align: center;
+  margin: 0 auto;
+  background-color: #708090;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.settingsRow {
+  display: block;
+  margin: 0 auto;
+  width: 60%;
+}
+
+.setting {
+  display: inline-block;
+  padding: 10px;
+}
+
+.timelapseSettingsButton {
+  float: right;
+}
+
