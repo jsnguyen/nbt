@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 
 import os
 import time
@@ -6,6 +6,7 @@ import subprocess
 import argparse
 import itertools
 import datetime
+import shutil
 from pathlib import Path
 
 # make sure lightmeter values are okay...
@@ -54,7 +55,7 @@ def main():
     print('N_FRAMES: {}'.format(n_frames))
     print('INTERVAL: {} seconds'.format(interval))
     
-    save_dir = 'NBT/'+str(datetime.datetime.now().isoformat())
+    save_dir = 'public/NBT_photos/'+str(datetime.datetime.now().isoformat())
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     save_prefix ='NBT'
     index = 0
@@ -103,8 +104,10 @@ def main():
 
         # make the file uppercase
         # print('Renaming files...')
+        latest_name = 'public/latest.jpg'
         os.rename( os.path.join(save_dir, raw_save_name), os.path.join(save_dir, raw_save_name.upper()) )
         os.rename( os.path.join(save_dir, jpg_save_name), os.path.join(save_dir, jpg_save_name.upper()) )
+        shutil.copyfile( os.path.join(save_dir, jpg_save_name.upper()), latest_name)
 
         print('Waiting... Estimated time remaining: {} seconds...'.format((unit_multiplier*args.timelapse_time)-((index+1)*interval)))
         time.sleep(remaining_time)

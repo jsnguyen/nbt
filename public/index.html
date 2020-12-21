@@ -4,6 +4,7 @@
 <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel="icon" href="favicon.ico" type="image/x-icon" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <html>
 
   <head>
@@ -46,11 +47,13 @@
   -->
 
   <div id="cameraSettings" class="settingsRow">
-    <div class="setting">50mm</div>
+    <div class="settingLeft">50mm</div>
     <div class="setting">f1.8</div>
     <div class="setting">ISO 400</div>
-    <div class="setting">1/4000</div>
-    <button id="timelapseSettingsButton" class="timelapseSettingsButton">Settings</button>
+    <div class="settingRight">1/4000</div>
+    <button id="timelapseSettingsButton" class="timelapseSettingsButton"><i class="fa fa-sliders"></i></button>
+    <button id="startButton" onclick="toggleStartStop()" class="timelapseSettingsButton"><i id="startButtonIcon" class="fa fa-play"></i></button>
+    <button id="latestButton" class="timelapseSettingsButton" onclick="getLatestJPG()"><i id="latestButtonIcon" class="fa fa-camera-retro"></i></button>
   </div>
 
 
@@ -93,10 +96,6 @@
   </div>
   -->
 
-  <input type="button" id="script" name="scriptbutton" value="Run Script" onclick="getLatestJPG()" />
-  <button onclick="move()">Click Me</button>
-
-
   <div id="myModal" class="modal">
 
     <div class="modal-content">
@@ -107,11 +106,11 @@
       </div>
 
       <div class="modal-body">
-        <div id="timelapseSettings" class="settingsRow">
-          <div class="setting">10 sec</div>
+        <div id="timelapseSettings" class="settingsRow" style="width: 100%">
+          <div class="settingLeft">10 sec</div>
           <div class="setting">5 spf</div>
           <div class="setting">100 f</div>
-          <div class="setting">24 fps</div>
+          <div class="settingRight">24 fps</div>
         </div>
       </div>
 

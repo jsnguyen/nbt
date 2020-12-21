@@ -4,7 +4,7 @@ import shutil
 import subprocess
 
 def main():
-    nbt_dir = '/Users/jsn/repos/nbt/NBT'
+    nbt_dir = './NBT_photos'
     latest_folder = sorted(os.listdir(nbt_dir))[-1] 
     latest_file = sorted(glob.glob((os.path.join(nbt_dir, latest_folder, '*.JPG'))))[-1]
 

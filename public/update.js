@@ -81,4 +81,14 @@ function move() {
   }
 }
 
+function toggleStartStop(){
+  startButtonIcon= document.getElementById("startButtonIcon")
+  if(startButtonIcon.className=="fa fa-play") {
+    startButtonIcon.className = "fa fa-stop";
+  } else {
+    startButtonIcon.className = "fa fa-play";
+  }
+  move()
+}
+
 main()
