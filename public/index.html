@@ -1,10 +1,12 @@
 <!DOCTYPE html>
+
 <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
 <meta content="utf-8" http-equiv="encoding">
 <link rel="stylesheet" type="text/css" href="styles.css" media="screen" />
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link rel="icon" href="favicon.ico" type="image/x-icon" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <html>
 
   <head>
@@ -25,76 +27,18 @@
     <div id="myBar"></div>
   </div>
 
-  <!--
-  <table>
-    <tr>
-      <th>Focal Ratio</th>
-      <th>Shutter Speed</th>
-      <th>ISO</th>
-      <th>Battery</th>
-      <th>Available Shots</th>
-      <th>Lightmeter</th>
-    </tr>
-    <tr>
-      <td> 1.8 </td>
-      <td> 0.3 </td>
-      <td> 400 </td>
-      <td> 100% </td>
-      <td> 200 </td>
-      <td> 0 </td>
-    </tr>
-  </table>
-  -->
-
   <div id="cameraSettings" class="settingsRow">
-    <div class="settingLeft">50mm</div>
-    <div class="setting">f1.8</div>
-    <div class="setting">ISO 400</div>
-    <div class="settingRight">1/4000</div>
+    <div id="focalLength" class="settingLeft">50mm</div>
+    <div id="focalRatio" class="setting">f1.8</div>
+    <div id="ISO" class="setting">ISO 400</div>
+    <div id="shutterSpeed" class="settingRight">1/4000</div>
+
     <button id="timelapseSettingsButton" class="timelapseSettingsButton"><i class="fa fa-sliders"></i></button>
     <button id="startButton" onclick="toggleStartStop()" class="timelapseSettingsButton"><i id="startButtonIcon" class="fa fa-play"></i></button>
     <button id="latestButton" class="timelapseSettingsButton" onclick="getLatestJPG()"><i id="latestButtonIcon" class="fa fa-camera-retro"></i></button>
   </div>
 
 
-
-  <!--
-  <div id="timelapseSettings" class="cardRow">
-    <div class="card">
-      <div class="cardHeader">Total Timelapse Time</div>
-      <div class="cardFooter">10s</div>
-    </div>
-    <div class="card">
-      <div class="cardHeader">Total Number of Shots</div>
-      <div class="cardFooter">100</div>
-    </div>
-    <div class="card">
-      <div class="cardHeader">Interval</div>
-      <div class="cardFooter">1s</div>
-    </div>
-    <div class="card">
-      <div class="cardHeader">Frames per Second</div>
-      <div class="cardFooter">24</div>
-    </div>
-  </div>
-  -->
-
-  <!--
-  <div id="cameraSettings" class="cardRow" style="display: none;">
-    <div class="card">
-      <div class="cardFooter">50mm</div>
-    </div>
-    <div class="card">
-      <div class="cardFooter">f1.8</div>
-    </div>
-    <div class="card">
-      <div class="cardFooter">ISO 400</div>
-    </div>
-    <div class="card">
-      <div class="cardFooter">SS 1/4000</div>
-    </div>
-  </div>
-  -->
 
   <div id="myModal" class="modal">
 
@@ -117,6 +61,5 @@
     </div>
 
   </div>
-
 
 </html>

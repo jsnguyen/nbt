@@ -104,10 +104,11 @@ def main():
 
         # make the file uppercase
         # print('Renaming files...')
-        latest_name = 'public/latest.jpg'
         os.rename( os.path.join(save_dir, raw_save_name), os.path.join(save_dir, raw_save_name.upper()) )
         os.rename( os.path.join(save_dir, jpg_save_name), os.path.join(save_dir, jpg_save_name.upper()) )
-        shutil.copyfile( os.path.join(save_dir, jpg_save_name.upper()), latest_name)
+
+        #latest_name = 'public/latest.jpg'
+        #shutil.copyfile( os.path.join(save_dir, jpg_save_name.upper()), latest_name)
 
         print('Waiting... Estimated time remaining: {} seconds...'.format((unit_multiplier*args.timelapse_time)-((index+1)*interval)))
         time.sleep(remaining_time)

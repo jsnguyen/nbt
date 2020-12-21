@@ -4,12 +4,12 @@ import shutil
 import subprocess
 
 def main():
-    nbt_dir = './NBT_photos'
+    nbt_dir = './public/NBT_photos'
     latest_folder = sorted(os.listdir(nbt_dir))[-1] 
     latest_file = sorted(glob.glob((os.path.join(nbt_dir, latest_folder, '*.JPG'))))[-1]
 
     print('Latest file:', latest_file)
-    full_output_path = 'latest.jpg'
+    full_output_path = './public/latest.jpg'
 
     shutil.copyfile(latest_file,full_output_path)
 

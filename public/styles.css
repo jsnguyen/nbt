@@ -301,6 +301,6 @@ th:last-child, td:last-child {
 
 /* Darker background on mouse-over */
 .timelapseSettingsButton:hover {
-  background-color: #696969;
+  background-color: #D3D3D3;
 }
 

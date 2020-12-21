@@ -1,6 +1,7 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 
 import subprocess
+import json
 
 # make sure lightmeter values are okay...
 # Get the initial exposure values from aperture priority mode 
@@ -36,11 +37,16 @@ def get_parameter(parameter):
 def main():
 
     useful_parameters={}
-    parameters_list = ['f-number', 'shutterspeed', 'iso', 'batterylevel', 'availableshots', 'lightmeter']
+    #parameters_list = ['f-number', 'shutterspeed', 'iso', 'batterylevel', 'availableshots', 'lightmeter']
+    parameters_list = ['focallength', 'f-number', 'shutterspeed2', 'iso', 'batterylevel', 'lightmeter']
     for el in parameters_list:
         useful_parameters[el] = get_parameter(el)
 
     print(useful_parameters)
+
+    outfile='camera_parameters.json'
+    with open(outfile, 'w') as f:
+        json.dump(useful_parameters, f)
 
 if __name__=='__main__':
     main()

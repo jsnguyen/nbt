@@ -22,14 +22,11 @@ app.get('/get_latest_jpg', function(req, res) {
     const process = spawn('python3', [scriptPath])
 
     process.stdout.on('data', (myData) => {
-        // Do whatever you want with the returned data.
-        // ...
         console.log(decodeURIComponent(escape(myData)))
         res.send("Done!")
     })
 
     process.stderr.on('data', (myErr) => {
-        // If anything gets written to stderr, it'll be in the myErr variable
       console.log(decodeURIComponent(escape(myErr)))
     })
 })
