@@ -55,7 +55,7 @@ def main():
     print('N_FRAMES: {}'.format(n_frames))
     print('INTERVAL: {} seconds'.format(interval))
     
-    save_dir = 'public/NBT_photos/'+str(datetime.datetime.now().isoformat())
+    save_dir = './NBT_photos/'+str(datetime.datetime.now().isoformat())
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     save_prefix ='NBT'
     index = 0

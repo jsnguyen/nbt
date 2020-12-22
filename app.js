@@ -15,20 +15,31 @@ app.get('/', function(req, res) {
 })
 
 app.get('/get_latest_jpg', function(req, res) {
-    // Call your python script here.
-    // I prefer using spawn from the child process module instead of the Python shell
-    const scriptPath = './public/get_latest_jpg.py'
-    console.log(scriptPath)
-    const process = spawn('python3', [scriptPath])
 
-    process.stdout.on('data', (myData) => {
-        console.log(decodeURIComponent(escape(myData)))
-        res.send("Done!")
-    })
+  const getDirectories = source =>
+    fs.readdirSync(source, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name)
+  
+  nbtPhotoDir = 'public/NBT_photos'
+  nbtDirectories = getDirectories(nbtPhotoDir)
 
-    process.stderr.on('data', (myErr) => {
-      console.log(decodeURIComponent(escape(myErr)))
-    })
+  latestDatetime  = nbtDirectories.sort().pop()
+
+  latestDirectory = path.join(nbtPhotoDir, latestDatetime)
+  basenames = fs.readdirSync(latestDirectory)
+
+  latestBasename = basenames.filter( a => a.includes(".JPG")).pop()
+
+  latestFilepath = path.join(nbtPhotoDir, latestDatetime, latestBasename)
+  latestFile = 'public/latest.jpg'
+
+  console.log(latestFilepath, latestFile)
+
+  fs.copyFileSync(latestFilepath, latestFile)
+
+  res.send("Done!") // need to send this at the end
+
 })
 
 app.listen(port, () => console.log('Server started on port: '+port))

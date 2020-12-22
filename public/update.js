@@ -8,7 +8,6 @@ function getLatestJPG() {
   console.log('Running...')
 
   fetch('/get_latest_jpg').then(function(response) {
-    console.log(response);
     updateImage()
     updateCameraParameters()
   })
@@ -18,22 +17,26 @@ function loadJSON(callback) {
     var xobj = new XMLHttpRequest();
     xobj.overrideMimeType("application/json");
     xobj.open('GET', 'camera_parameters.json', true);
+
     xobj.onreadystatechange = function () {
-          if (xobj.readyState == 4 && xobj.status == "200") {
-                  callback(JSON.parse(xobj.responseText));
-                }
-        };
+
+      if (xobj.readyState == 4 && xobj.status == "200") {
+        callback(JSON.parse(xobj.responseText));
+      }
+
+    };
+
     xobj.send(null);  
 }
 
 function updateCameraParameters(){
   loadJSON(function(cameraParameters) {
-    console.log(cameraParameters); // this will log out the json object
 
     document.getElementById("focalLength").innerHTML = cameraParameters['focallength']+'mm';
     document.getElementById("focalRatio").innerHTML = 'f/'+cameraParameters['f-number'];
     document.getElementById("ISO").innerHTML = 'ISO '+cameraParameters['iso'];
     document.getElementById("shutterSpeed").innerHTML = cameraParameters['shutterspeed2']+'s';
+
   });
 }
 
@@ -58,24 +61,7 @@ function updateImage(){
 }
 
 function main(){
-
-  var timeoutPeriod = 1000
-  var x=0, y=0
-  var img = new Image()
-  img.src = 'latest.jpg'
-
-  img.onload = function() {
-    var canvas = document.getElementById('canvas')
-    var context = canvas.getContext('2d')
-
-    // only works for horizontal images of a standard size (3:2) for now!
-    canvas.width = window.innerWidth*0.6
-    scalingFactor = canvas.width/img.width
-    canvas.height = img.height*scalingFactor
-
-    context.drawImage(img, 0, 0, canvas.width, img.height*scalingFactor)
-    //setTimeout(() => refresh(img),timeoutPeriod)
-  }
+  getLatestJPG()
 
   document.addEventListener('DOMContentLoaded', () => {
     // Get the modal
