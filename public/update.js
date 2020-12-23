@@ -5,7 +5,7 @@ function refresh(img) {
 }
 
 function getLatestJPG() {
-  console.log('Running...')
+  console.log('Getting latest JPG...')
 
   fetch('/get_latest_jpg').then(function(response) {
     updateImage()
@@ -121,6 +121,16 @@ function toggleStartStop(){
     startButtonIcon.className = "fa fa-play";
   }
   move()
+  startTimelapse()
 }
+
+function startTimelapse() {
+  console.log('Starting timelapse...')
+
+  fetch('/start').then(function(response) {
+    console.log('Start timelapse response receieved!')
+  })
+}
+
 
 main()
