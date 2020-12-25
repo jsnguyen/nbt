@@ -29,7 +29,13 @@ app.get('/get_latest_jpg', function(req, res) {
   latestDirectory = path.join(nbtPhotoDir, latestDatetime)
   basenames = fs.readdirSync(latestDirectory)
 
-  latestBasename = basenames.filter( a => a.includes(".jpg")).pop()
+  latestBasename = basenames.filter( a => a.includes('.jpg')).pop()
+
+  if (latestBasename == null) {
+    console.log('WARNING: No file found in latest photos folder!')
+    res.status('500').send()
+    return
+  }
 
   latestFilepath = path.join(nbtPhotoDir, latestDatetime, latestBasename)
   latestFile = 'public/latest.jpg'
@@ -38,15 +44,13 @@ app.get('/get_latest_jpg', function(req, res) {
 
   fs.copyFileSync(latestFilepath, latestFile)
 
-  res.status("200").send()
+  res.status('200').send()
+  return
 
 })
 
-app.get('/start', function(req, res) {
-  startTimelapse(req,res)
-})
+app.get('/start', async function(req, res) {
 
-async function startTimelapse(req, res){
   timelapseTime = 600
   fps = 24
   clipLength = 3
@@ -67,31 +71,80 @@ async function startTimelapse(req, res){
   filenameFlag = '--filename='
   forceOverwriteFlag = '--force-overwrite'
 
-  for (i=0; i<nFrames; i++){
+  index = 0
+  errorCounter = 0
+  maxNError = 3
+  res.setHeader('Content-Type', 'application/json');
+  while (index < nFrames) {
     startTime = new Date()
 
-    paddedIndex = i.toString().padStart(4,'0')
+    paddedIndex = index.toString().padStart(4,'0')
     filename=`NBT_${paddedIndex}.%C`
 
     filepath = path.join(saveDir,filename)
 
     execCommand = [gphoto2, captureImageAndDownloadFlag, filenameFlag+filepath, forceOverwriteFlag].join(' ')
-    console.log(execCommand)
+    console.log('Running...',execCommand)
 
-    stdout = execSync(execCommand)
-    console.log(stdout)
-    res.status("200").send()
+    try {
 
-    postCaptureTime = new Date()
+      stdout = execSync(execCommand)
+      res.write(JSON.stringify({i: index, n: nFrames}))
 
-    remainingTime = interval - (startTime - postCaptureTime)
+      index++
 
-    console.log(remainingTime/1000)
-    await new Promise(resolve => setTimeout(resolve, remainingTime));
+      postCaptureTime = new Date()
+
+      remainingTime = interval - (startTime - postCaptureTime)
+
+      console.log(remainingTime/1000)
+      await new Promise(resolve => setTimeout(resolve, remainingTime));
+
+      estimatedTime = (timelapseTime)-((index+1)*interval)
+      console.log(`Waiting... Estimated time remaining: ${estimatedTime} seconds...`)
+
+    }
+
+    catch (error) {
+      console.log('ERROR!')
+      try { 
+        stderr = error.stderr.toString()
+        console.log(stderr)
+
+        // this only occurs when the camera is interrupted before downloading the files
+        if (stderr.includes('*** Error: I/O in progress ***')){
+          console.log('ERROR: I/O, restarting loop...')
+        }
+
+        else if (stderr.includes('*** Error: No camera found. ***')){
+          console.log('ERROR: No camera found! Restarting loop.')
+        }
+
+        else {
+          console.log('ERROR: Unknown error! Restarting loop.')
+          console.log(stderr)
+        }
+
+      }
+      catch {
+        stderr = console.log(error.toString())
+        console.log(stderr)
+      }
+
+      index = 0
+      errorCounter++
+
+    }
+
+    if (errorCounter > maxNError){
+      console.log('ERROR: Too many I/O errors stopping timelapse...')
+      res.status('500').send()
+      return
+    }
 
   }
-
-}
+  res.end()
+})
 
 function sleep(ms) {
   return new Promise((resolve) => {

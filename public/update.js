@@ -128,6 +128,7 @@ function startTimelapse() {
   console.log('Starting timelapse...')
 
   fetch('/start').then(function(response) {
+    console.log(response)
     console.log('Start timelapse response receieved!')
   })
 }
