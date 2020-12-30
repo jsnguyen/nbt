@@ -1,4 +1,3 @@
-
 function refresh(img) {
   // just change src attribute, will always trigger the onload callback
   img.src = img.src.split('?')[0] + '?d=' + Date.now()
@@ -55,7 +54,7 @@ function updateImage(){
     var context = canvas.getContext('2d')
 
     // only works for horizontal images of a standard size (3:2) for now!
-    canvas.width = window.innerWidth*0.6
+    canvas.width = window.innerWidth*0.9
     scalingFactor = canvas.width/img.width
     canvas.height = img.height*scalingFactor
 
@@ -100,6 +99,18 @@ function main(){
       }
     }
   });
+
+  const ws = new WebSocket('ws://192.168.0.110:8131')
+
+  ws.onopen = function open() {
+    ws.send('I have connected!')
+    console.log('CLIENT: Websocket open!')
+    
+  }
+
+  ws.onmessage = function incoming(message) {
+    console.log('CLIENT: Received %s', message)
+  }
 
 }
 

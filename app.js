@@ -1,12 +1,17 @@
 var fs = require('fs')
 var path = require('path')
 var express = require('express')
+var WebSocket = require('ws');
 const { exec } = require('child_process')
+const http = require('http');
 
 var app = express()
 
 app.use(express.static(__dirname + '/public'))
 app.use(express.json())
+
+const httpServer = http.createServer( app );
+const wss = new WebSocket.Server({ server: httpServer });
 
 console.log(__dirname+'/public')
 
@@ -26,10 +31,43 @@ global.timelapseSettings = {timelapseTime: 0,
 
 global.minimumTime = 9.2405 // as measured by measure_minimum_time.sh
 
+global.cameraConnected = false
+
 const timelapseSettingsFilename = 'public/timelapse_settings.json'
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + '/index.html'))
+})
+
+function pollCameraConnection() {
+  var gphoto2 = 'gphoto2'
+  var autoDetectFlag = '--auto-detect'
+
+  var execCommand = [gphoto2, autoDetectFlag].join(' ')
+  console.log('Polling camera connection...')
+  var cameraConnected = false
+
+  return new Promise( async (resolve, reject) => {
+
+    try {
+      var response = await execPromise(execCommand)
+      var nNewlines = response.split(/\r\n|\r|\n/).length
+      cameraConnected = nNewlines > 3 // if greater than 3 then we have a camera connected
+      global.cameraConnected = cameraConnected
+      resolve(cameraConnected)
+    }
+
+    catch (error) {
+      var stderr = error.toString()
+      console.log('ERROR: Unknown error! Exiting...')
+      console.log(stderr)
+      reject(stderr)
+    }
+  });
+}
+
+app.get('/camera_connection', async function(req, res) {
+  res.send({cameraConnected: global.cameraConnected})
 })
 
 app.get('/state', function(req, res) {
@@ -152,7 +190,7 @@ app.get('/start', async function(req, res) {
         errorCounter++
       }
 
-      if (stderr.includes('*** Error (-110: \'I/O in progress\') ***')){
+      else if (stderr.includes('*** Error (-110: \'I/O in progress\') ***')){
         console.log('ERROR: I/O, restarting loop...')
         index = 0
         errorCounter++
@@ -289,6 +327,28 @@ function execPromise(cmd) {
   });
 }
 
-app.listen(port, () => console.log('Server started on port: '+port))
+httpServer.listen( port, function listening(){
+  console.log('Server started on port: '+port)
+});
+
+//app.listen(port, () => console.log('Server started on port: '+port))
 global.timelapseSettings = JSON.parse(loadData(timelapseSettingsFilename))
 console.log('Previous timelapse settings:', global.timelapseSettings)
+
+wss.on('connection', function connection(ws) {
+  console.log('SERVER: Websocket open!')
+
+  ws.on('message', function incoming(message) {
+    console.log('SERVER: Received message -> %s', message)
+  })
+
+})
+
+async function continuousPollCameraConnection() {
+  while(!global.cameraConnected){
+    let response = await pollCameraConnection()
+    console.log('Camera connection status:', response)
+  }
+}
+continuousPollCameraConnection()
+
