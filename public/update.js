@@ -7,9 +7,13 @@ function refresh(img) {
 function getLatestJPG() {
   console.log('Getting latest JPG...')
 
-  fetch('/get_latest_jpg').then(function(response) {
-    updateImage()
-    updateCameraParameters()
+  fetch('/get_latest_jpg')
+  .then( response => response.json() )
+  .then( responseJSON => {
+    console.log(responseJSON)
+    if (responseJSON['isNew']){
+      updateImage()
+    }
   })
 }
 
@@ -30,14 +34,15 @@ function loadJSON(callback) {
 }
 
 function updateCameraParameters(){
-  loadJSON(function(cameraParameters) {
-
-    document.getElementById("focalLength").innerHTML = cameraParameters['focallength']+'mm';
-    document.getElementById("focalRatio").innerHTML = 'f/'+cameraParameters['f-number'];
-    document.getElementById("ISO").innerHTML = 'ISO '+cameraParameters['iso'];
-    document.getElementById("shutterSpeed").innerHTML = cameraParameters['shutterspeed2']+'s';
-
-  });
+  fetch('/camera_parameters')
+  .then( response => response.json() )
+  .then( responseJSON => {
+    console.log(responseJSON)
+    document.getElementById("focalLength").innerHTML = responseJSON['Focal Length']+'mm';
+    document.getElementById("focalRatio").innerHTML = responseJSON['F-Number'];
+    document.getElementById("ISO").innerHTML = 'ISO '+ responseJSON['ISO Speed'];
+    document.getElementById("shutterSpeed").innerHTML = responseJSON['Shutter Speed 2']+'s';
+  })
 }
 
 function updateImage(){
@@ -61,9 +66,12 @@ function updateImage(){
 }
 
 function main(){
+  updateImage()
+  updateCameraParameters()
   getLatestJPG()
 
   document.addEventListener('DOMContentLoaded', () => {
+    getState()
     // Get the modal
     var modal = document.getElementById("myModal");
 
@@ -81,57 +89,94 @@ function main(){
     // When the user clicks on <span> (x), close the modal
     span.onclick = function() {
       modal.style.display = "none";
+      submitTimelapseSettings()
     }
 
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
       if (event.target == modal) {
         modal.style.display = "none";
+        submitTimelapseSettings()
       }
     }
   });
 
 }
 
-function move() {
-  var i = 0;
-  if (i == 0) {
-    i = 1;
-    var elem = document.getElementById("myBar");
-    var width = 10;
-    var id = setInterval(frame, 10);
-    function frame() {
-      if (width >= 100) {
-        clearInterval(id);
-        i = 0;
-      } else {
-        width++;
-        elem.style.width = width + "%";
-        //elem.innerHTML = width  + "%";
-      }
+function getState(interval = null) {
+  var elem = document.getElementById("myBar");
+
+  fetch('/state')
+  .then( response => response.json() )
+  .then( responseJSON => {
+    console.log(responseJSON)
+
+    if (responseJSON['frameTotal'] == 0){
+      var percentage = 0
+    } else {
+      var percentage = responseJSON['framesLeft']/responseJSON['frameTotal']
     }
-  }
+
+    document.getElementById("progressPercentage").innerHTML = String((percentage*100).toFixed(2)) + '%'
+    document.getElementById("progressInterval").innerHTML = String(responseJSON['interval']) + 's'
+    document.getElementById("progressIndex").innerHTML = String(responseJSON['framesLeft']) + ' of ' + String(responseJSON['frameTotal'])
+    let width = percentage*100
+    console.log(width)
+
+    elem.style.width = (isFinite(width) ? String(width) : '0') + '%'
+
+    if ( interval && ! responseJSON['running']){
+      clearInterval(interval)
+    }
+
+  })
 }
 
 function toggleStartStop(){
-  startButtonIcon= document.getElementById("startButtonIcon")
+  /*
+  var startButtonIcon = document.getElementById("startButtonIcon")
   if(startButtonIcon.className=="fa fa-play") {
     startButtonIcon.className = "fa fa-stop";
   } else {
     startButtonIcon.className = "fa fa-play";
   }
-  move()
+  */
   startTimelapse()
+
+  var interval = setInterval( () => {
+    getLatestJPG()
+    getState(interval)
+  }, 1000);
+
 }
 
 function startTimelapse() {
   console.log('Starting timelapse...')
 
   fetch('/start').then(function(response) {
-    console.log(response)
     console.log('Start timelapse response receieved!')
   })
 }
 
+function submitTimelapseSettings() {
+  var timelapseTime = document.getElementById("timelapseTimeInput").value;
+  var clipLength = document.getElementById("clipLengthInput").value;
+  var payload = {timelapseTime: timelapseTime, clipLength: clipLength}
+
+  fetch('input', {
+      method: 'POST', // or 'PUT'
+      headers: {
+            'Content-Type': 'application/json',
+          },
+      body: JSON.stringify(payload),
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('SUCCESS:', data);
+  })
+  .catch((error) => {
+      console.error('ERROR:', error);
+  });
+}
 
 main()

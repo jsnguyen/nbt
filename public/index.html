@@ -18,9 +18,9 @@
   <script src="update.js"></script>
 
   <div class="progressIndicators">
-    <div class="percentage">21%</div>
-    <div class="time">5s</div>
-    <div class="number">1 of 100</div>
+    <div id='progressPercentage' class="percentage">0%</div>
+    <div id='progressInterval' class="time">0s</div>
+    <div id='progressIndex' class="number">0 of 0</div>
   </div>
 
   <div id="myProgress">
@@ -28,10 +28,10 @@
   </div>
 
   <div id="cameraSettings" class="settingsRow">
-    <div id="focalLength" class="settingLeft">50mm</div>
-    <div id="focalRatio" class="setting">f1.8</div>
-    <div id="ISO" class="setting">ISO 400</div>
-    <div id="shutterSpeed" class="settingRight">1/4000</div>
+    <div id="focalLength" class="settingLeft">No data.</div>
+    <div id="focalRatio" class="setting"></div>
+    <div id="ISO" class="setting"></div>
+    <div id="shutterSpeed" class="settingRight"></div>
 
     <button id="timelapseSettingsButton" class="timelapseSettingsButton"><i class="fa fa-sliders"></i></button>
     <button id="startButton" onclick="toggleStartStop()" class="timelapseSettingsButton"><i id="startButtonIcon" class="fa fa-play"></i></button>
@@ -50,11 +50,11 @@
       </div>
 
       <div class="modal-body">
-        <div id="timelapseSettings" class="settingsRow" style="width: 100%">
-          <div class="settingLeft">10 sec</div>
-          <div class="setting">5 spf</div>
-          <div class="setting">100 f</div>
-          <div class="settingRight">24 fps</div>
+        <div id="timelapseSettings" class="timelapseSettingsRow" style="width: 100%">
+          <div id="timelapseTime" class="settingLeft"><input id="timelapseTimeInput" class="form" placeholder="timelapse time" type="number" min=0></input></div>
+          <div id="clipLength" class="setting"><input id="clipLengthInput" class="form" placeholder="clip length" type="number" min=0></input></div>
+          <div id="interval" class="setting"> 5s</div>
+          <div id="framesPerSecond" class="settingRight">24 fps</div>
         </div>
       </div>
 

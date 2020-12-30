@@ -44,7 +44,7 @@ table {
   margin-bottom: 2%;
   margin-left: auto;
   margin-right: auto;
-  width: 60%;
+  width: 90%;
   border:none;
   border-collapse: collapse;
   background-color: #778899;
@@ -71,7 +71,7 @@ th:last-child, td:last-child {
 
 #myProgress {
   margin: auto;
-  width: 60%;
+  width: 90%;
   background-color: #ddd;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
@@ -111,7 +111,7 @@ th:last-child, td:last-child {
   margin-left: auto;
   margin-right: auto;
   display: table;
-  width: 60%;
+  width: 90%;
 }
 
 .settings{
@@ -120,22 +120,7 @@ th:last-child, td:last-child {
   margin-left: auto;
   margin-right: auto;
   display: block;
-  width: 60%;
-}
-
-#timelapseTime {
-  margin: auto;
-  display: block;
-}
-
-#clipLength {
-  margin: auto;
-  display: block;
-}
-
-#submit{
-  margin: auto;
-  display: block;
+  width: 90%;
 }
 
 /* The Modal (background) */
@@ -164,8 +149,8 @@ th:last-child, td:last-child {
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
-  background-color: #fefefe;
-  width: 60%;
+  background-color: #696969;
+  width: 90%;
   -webkit-animation-name: slideIn;
   -webkit-animation-duration: 0.4s;
   animation-name: slideIn;
@@ -190,7 +175,7 @@ th:last-child, td:last-child {
 .modal-header {
   margin: auto;
   padding: 2px 16px;
-  background-color: #696969;
+  background-color: #708090;
   color: white;
 }
 
@@ -260,11 +245,20 @@ th:last-child, td:last-child {
 .settingsRow {
   display: block;
   margin: 0 auto;
-  width: 60%;
+  width: 90%;
   background-color: #696969;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
+
+.timelapseSettingsRow {
+  display: block;
+  margin: 0 auto;
+  width: 90%;
+  color: white;
+  background-color: #696969;
+}
+
 
 .settingLeft {
   display: inline-block;
@@ -302,5 +296,18 @@ th:last-child, td:last-child {
 /* Darker background on mouse-over */
 .timelapseSettingsButton:hover {
   background-color: #D3D3D3;
+}
+
+.form{
+  width: 100px;
+  padding: 10px;
+  text-align: center;
+  background:#f8f8f8;
+  border:1px solid rgba(0, 0, 0, 0.075);
+  color:#727272 !important;
+  font-size:12px;
+  -webkit-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
 }
 
