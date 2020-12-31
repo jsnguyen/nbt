@@ -16,22 +16,6 @@ function getLatestJPG() {
   })
 }
 
-function loadJSON(callback) {   
-    var xobj = new XMLHttpRequest();
-    xobj.overrideMimeType("application/json");
-    xobj.open('GET', 'camera_parameters.json', true);
-
-    xobj.onreadystatechange = function () {
-
-      if (xobj.readyState == 4 && xobj.status == "200") {
-        callback(JSON.parse(xobj.responseText));
-      }
-
-    };
-
-    xobj.send(null);  
-}
-
 function updateCameraParameters(){
   fetch('/camera_parameters')
   .then( response => response.json() )
@@ -61,56 +45,6 @@ function updateImage(){
     context.drawImage(img, 0, 0, canvas.width, img.height*scalingFactor)
   }
   refresh(img)
-
-}
-
-function main(){
-  updateImage()
-  updateCameraParameters()
-  getLatestJPG()
-
-  document.addEventListener('DOMContentLoaded', () => {
-    getState()
-    // Get the modal
-    var modal = document.getElementById("myModal");
-
-    // Get the button that opens the modal
-    var btn = document.getElementById("timelapseSettingsButton");
-
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks the button, open the modal
-    btn.onclick = function() {
-      modal.style.display = "block";
-    }
-
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-      modal.style.display = "none";
-      submitTimelapseSettings()
-    }
-
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
-        submitTimelapseSettings()
-      }
-    }
-  });
-
-  const ws = new WebSocket('ws://192.168.0.110:8131')
-
-  ws.onopen = function open() {
-    ws.send('I have connected!')
-    console.log('CLIENT: Websocket open!')
-    
-  }
-
-  ws.onmessage = function incoming(message) {
-    console.log('CLIENT: Received %s', message)
-  }
 
 }
 
@@ -188,6 +122,57 @@ function submitTimelapseSettings() {
   .catch((error) => {
       console.error('ERROR:', error);
   });
+}
+
+function main(){
+  updateImage()
+  updateCameraParameters()
+  getLatestJPG()
+
+  document.addEventListener('DOMContentLoaded', () => {
+    getState()
+    // Get the modal
+    var modal = document.getElementById("myModal");
+
+    // Get the button that opens the modal
+    var btn = document.getElementById("timelapseSettingsButton");
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("close")[0];
+
+    // When the user clicks the button, open the modal
+    btn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function() {
+      modal.style.display = "none";
+      submitTimelapseSettings()
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+        submitTimelapseSettings()
+      }
+    }
+  });
+
+  const ws = new WebSocket('ws://192.168.0.110:8131')
+
+  ws.onopen = function open() {
+    ws.send('I have connected!')
+    console.log('CLIENT: Websocket open!')
+    
+  }
+
+  ws.onmessage = function incoming(message) {
+    var payload = JSON.parse(message.data)
+    console.log('CLIENT: Received ', payload)
+  }
+
 }
 
 main()

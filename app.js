@@ -122,9 +122,6 @@ app.get('/start', async function(req, res) {
     return
   }
 
-  //global.timelapseTime = 10
-  //global.clipLength = 1
-
   var fps = 24
   var nFrames = fps*global.timelapseSettings['clipLength']
   var interval = global.timelapseSettings['timelapseTime']/nFrames
@@ -223,30 +220,12 @@ app.get('/start', async function(req, res) {
   }
 
   global.state['running'] = false 
-  /*
-  global.state['framesLeft'] = 0
-  global.state['frameTotal'] = 0
-  global.state['timeUntilNextFrame'] = 0
-  global.state['interval'] = 0
-  */
 
 })
 
 app.get('/camera_parameters', async (req, res) => {
   var gphoto2 = 'gphoto2'
   var getAllConfigFlag = '--list-all-config'
-
-  /*
-  var getConfigFlag = '--get-config'
-  parameters = ['focallength', 'f-number', 'shutterspeed2', 'iso', 'batterylevel', 'lightmeter']
-
-  for (let param of parameters){
-    console.log(param)
-    var execCommand = [gphoto2, getConfigFlag, param].join(' ')
-    var response = await execPromise(execCommand)
-    console.log(response)
-  }
-  */
 
   try {
     var execCommand = [gphoto2, getAllConfigFlag].join(' ')
@@ -339,9 +318,9 @@ wss.on('connection', function connection(ws) {
   console.log('SERVER: Websocket open!')
 
   ws.on('message', function incoming(message) {
+    ws.send(JSON.stringify({type: 'test'}))
     console.log('SERVER: Received message -> %s', message)
   })
-
 })
 
 async function continuousPollCameraConnection() {

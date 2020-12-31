@@ -293,6 +293,20 @@ th:last-child, td:last-child {
   cursor: pointer; /* Mouse pointer on hover */
 }
 
+.cameraConnected{
+  float: right;
+  padding: 10px;
+}
+
+.cameraConnectedDot{
+  font-family: "FontAwesome";
+  float: right;
+  background-color: rgb(0,0,0,0);
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 10px; /* Some padding */
+}
+
 /* Darker background on mouse-over */
 .timelapseSettingsButton:hover {
   background-color: #D3D3D3;
