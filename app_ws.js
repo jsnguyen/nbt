@@ -34,6 +34,8 @@ global.minimumTime = 9.2405 // as measured by measure_minimum_time.sh
 global.cameraConnected = false
 const timelapseSettingsFilename = 'public/timelapse_settings.json'
 
+global.connectedWebSockets = []
+
 function execPromise(cmd) {
   return new Promise((resolve, reject) => {
     exec(cmd, (error, stdout, stderr) => {
@@ -124,11 +126,20 @@ async function getCameraParameters() {
 
   catch (error) {
     var stderr = error.toString()
-    console.log(error)
+    console.log('Camera parameters error!')
 
-    if (stderr.includes('Could not detect any camera')){
+    if (error.includes('Could not detect any camera')){
       console.log('ERROR: No camera found! Exiting...')
       return
+    }
+
+    else if (error.includes('I/O problem')){
+      console.log('ERROR: I/O problem found! May have to unplug/restart camera. Exiting...')
+      return
+    }
+    else {
+      console.log('ERROR: Unknown error!')
+      console.log(error)
     }
   }
 }
@@ -172,6 +183,115 @@ function getLatestJPG(){
 
 }
 
+function prepPayload(type, data){
+  return JSON.stringify({type: type, payload: data})
+}
+
+async function startTimelapse(){
+  if (global.progress['running']){
+    console.log('ERROR: Can\'t start timelapse! Already running!')
+    return
+  }
+
+  var fps = 24
+  var nFrames = fps*global.timelapseSettings['clipLength']
+  var interval = global.timelapseSettings['timelapseTime']/nFrames
+
+  var date = new Date()
+  var datetimeISO = date.toISOString()
+
+  var photoDir = 'public/NBT_photos/'
+
+  var saveDir = path.join(photoDir,datetimeISO)
+  fs.mkdirSync(saveDir);
+  console.log(saveDir)
+
+  var gphoto2 = 'gphoto2'
+  var captureImageAndDownloadFlag = '--capture-image-and-download'
+  var filenameFlag = '--filename='
+  var forceOverwriteFlag = '--force-overwrite'
+
+  global.progress['running'] = true
+  global.progress['frameTotal'] = nFrames
+  global.progress['interval'] = interval
+  console.log('Interval: ', interval)
+
+  var errorCounter = 0
+  var maxNError = 3
+
+  for (let index=0; index < nFrames; index++) {
+    let startTime = new Date()
+
+    let paddedIndex = index.toString().padStart(4,'0')
+    let filename = `NBT_${paddedIndex}.%C`
+
+    let filepath = path.join(saveDir,filename)
+
+    var execCommand = [gphoto2, captureImageAndDownloadFlag, filenameFlag+filepath, forceOverwriteFlag].join(' ')
+    console.log('Running...', execCommand)
+    try {
+
+      var response = await execPromise(execCommand)
+
+      global.progress['framesLeft'] = index+1
+
+      var postCaptureTime = new Date()
+
+      var remainingTime = interval*1000 - (postCaptureTime - startTime)
+
+      await sleep(remainingTime)
+      console.log(`Remaining time in loop ${remainingTime}ms`)
+
+      var estimatedTime = (global.timelapseSettings['timelapseTime'])-((index+1)*interval)
+      console.log(`Waiting... Estimated time remaining: ${estimatedTime} seconds...`)
+      global.progress['timeUntilNextFrame'] = remainingTime/1000
+
+    }
+
+    catch (error) {
+
+      var stderr = error.toString()
+
+      // this only occurs when the camera is interrupted before downloading the files
+      if (stderr.includes('*** Error: I/O in progress ***')){
+        console.log('ERROR: I/O, restarting loop...')
+        index = 0
+        errorCounter++
+      }
+
+      else if (stderr.includes('*** Error (-110: \'I/O in progress\') ***')){
+        console.log('ERROR: I/O, restarting loop...')
+        index = 0
+        errorCounter++
+      }
+
+      else if (stderr.includes('*** Error: No camera found. ***')){
+        console.log('ERROR: No camera found! Exiting...')
+        global.progress['running'] = false 
+        return
+      }
+
+      else {
+        console.log('ERROR: Unknown error! Exiting...')
+        console.log(stderr)
+        global.progress['running'] = false 
+        return
+      }
+
+    }
+
+    if (errorCounter > maxNError){
+      console.log('ERROR: Too many I/O errors stopping timelapse...')
+      global.progress['running'] = false 
+      return
+    }
+
+  }
+
+  global.progress['running'] = false 
+
+}
+
 function initialization(){
   global.timelapseSettings = JSON.parse(loadData(timelapseSettingsFilename))
   console.log('Previous timelapse settings:', global.timelapseSettings)
@@ -192,21 +312,44 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname + '/index.html'))
 })
 
-function prepPayload(type, data){
-  return JSON.stringify({type: type, payload: data})
-}
-
 wss.on('connection', function connection(ws) {
   console.log('SERVER: Websocket open!')
+
   ws.send(prepPayload('cameraConnected',global.cameraConnected))
   ws.send(prepPayload('cameraParameters',global.cameraParameters))
 
   ws.on('message', function incoming(message) {
     var messageJSON = JSON.parse(message)
     console.log('SERVER: Received ', messageJSON)
+
     if (messageJSON['type'] == 'getLatestJPG'){
       getLatestJPG()
+      ws.send(prepPayload('getLatestJPGReply',true))
     }
+
+    else if (messageJSON['type'] == 'inputTimelapseParameters'){
+      global.timelapseSettings['clipLength'] = Number(messageJSON['payload']['clipLength'])
+      global.timelapseSettings['timelapseTime'] = Number(messageJSON['payload']['timelapseTime'])
+
+      const storeData = (data, path) => {
+        try {
+          fs.writeFileSync(path, JSON.stringify(data))
+        } catch (err) {
+          console.error(err)
+        }
+      }
+      storeData(global.timelapseSettings, timelapseSettingsFilename)
+
+    }
+
+    else if (messageJSON['type'] == 'startTimelapse'){
+      startTimelapse()
+    }
+
+    else if (messageJSON['type'] == 'getProgress'){
+      ws.send(prepPayload('progress',global.progress))
+    }
+
   })
 
 })

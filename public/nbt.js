@@ -4,9 +4,56 @@ function prepPayload(type, data){
 }
 
 function getLatestJPG() {
-  console.log('Getting latest JPG...')
   ws.send(prepPayload('getLatestJPG',true))
+  updateImage()
 }
+
+function getProgress(interval = null) {
+  ws.send(prepPayload('getProgress',true))
+  updateProgress(interval = interval)
+}
+ 
+function updateProgress(messageJSON, interval = null) {
+
+  var elem = document.getElementById("myBar");
+  if (messageJSON['frameTotal'] == 0){
+    var percentage = 0
+  } else {
+    var percentage = messageJSON['framesLeft']/messageJSON['frameTotal']
+  }
+
+  document.getElementById("progressPercentage").innerHTML = String((percentage*100).toFixed(2)) + '%'
+  document.getElementById("progressInterval").innerHTML = String(messageJSON['interval']) + 's'
+  document.getElementById("progressIndex").innerHTML = String(messageJSON['framesLeft']) + ' of ' + String(messageJSON['frameTotal'])
+  let width = percentage*100
+  console.log(width)
+
+  elem.style.width = (isFinite(width) ? String(width) : '0') + '%'
+
+  if ( interval && ! messageJSON['running']){
+    clearInterval(interval)
+  }
+
+}
+
+function startTimelapse() {
+  ws.send(prepPayload('startTimelapse',true))
+  getProgress
+
+  var interval = setInterval( () => {
+    getProgress(interval)
+  }, 1000);
+
+}
+
+function submitTimelapseSettings() {
+  var timelapseTime = document.getElementById("timelapseTimeInput").value;
+  var clipLength = document.getElementById("clipLengthInput").value;
+  var payload = {timelapseTime: timelapseTime, clipLength: clipLength}
+
+  ws.send(prepPayload('inputTimelapseParameters',payload))
+}
+
 
 function updateImage(){
   var x=0, y=0
@@ -77,13 +124,34 @@ ws.onmessage = function incoming(message) {
 
   if(messageJSON['type'] == 'cameraConnected'){
     var cameraConnectedDotIcon = document.getElementById("cameraConnectedDotIcon");
+
     if(messageJSON['payload']){
       cameraConnectedDotIcon.style.color='#66ff33'
     }
+
     else if(!messageJSON['payload']){
       cameraConnectedDotIcon.style.color='#ff0000'
     }
+
   }
+
+  else if(messageJSON['type'] == 'getLatestJPGReply'){
+    if (messageJSON['payload']){
+      updateImage()
+    }
+  }
+
+  else if(messageJSON['type'] == 'cameraParameters'){
+    document.getElementById("focalLength").innerHTML = messageJSON['payload']['Focal Length']+'mm';
+    document.getElementById("focalRatio").innerHTML = messageJSON['payload']['F-Number'];
+    document.getElementById("ISO").innerHTML = 'ISO '+ messageJSON['payload']['ISO Speed'];
+    document.getElementById("shutterSpeed").innerHTML = messageJSON['payload']['Shutter Speed 2']+'s';
+  }
+
+  else if(messageJSON['type'] == 'progress'){
+    updateProgress(messageJSON['payload'])
+  }
+
 }
 
 main()
