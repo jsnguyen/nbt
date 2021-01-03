@@ -9,12 +9,11 @@ function getLatestJPG() {
   updateImage()
 }
 
-function getProgress(interval = null) {
+function getProgress() {
   ws.send(prepPayload('getProgress',true))
-  updateProgress(interval = interval)
 }
  
-function updateProgress(messageJSON, interval = null) {
+function updateProgress(messageJSON) {
 
   var elem = document.getElementById("myBar");
   if (messageJSON['frameTotal'] == 0){
@@ -31,8 +30,8 @@ function updateProgress(messageJSON, interval = null) {
 
   elem.style.width = (isFinite(width) ? String(width) : '0') + '%'
 
-  if ( interval && ! messageJSON['running']){
-    clearInterval(interval)
+  if ( progressInterval && ! messageJSON['running']){
+    clearInterval(progressInterval)
   }
 
 }
@@ -123,6 +122,7 @@ const ws = new WebSocket('ws://192.168.0.110:8131')
 ws.onopen = function open() {
   console.log('CLIENT: Websocket open!')
   getLatestJPG()
+  updateProgress()
 }
 
 ws.onmessage = function incoming(message) {
