@@ -6,3 +6,4 @@ node_modules
 *.NEF
 public/latest.jpg
 public/NBT_photos
+tmp*
