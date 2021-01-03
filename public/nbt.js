@@ -1,3 +1,4 @@
+var progressInterval = null
 
 function prepPayload(type, data){
   return JSON.stringify({type: type, payload: data})
@@ -38,12 +39,18 @@ function updateProgress(messageJSON, interval = null) {
 
 function startTimelapse() {
   ws.send(prepPayload('startTimelapse',true))
-  getProgress
 
-  var interval = setInterval( () => {
-    getProgress(interval)
+  progressInterval = setInterval( () => {
+    getProgress(progressInterval)
   }, 1000);
 
+}
+
+function stopTimelapse() {
+  if (confirm('Stop timelapse?')){
+  ws.send(prepPayload('stopTimelapse',true))
+  clearInterval(progressInterval)
+  }
 }
 
 function submitTimelapseSettings() {

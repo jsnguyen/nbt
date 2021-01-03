@@ -36,6 +36,8 @@ const timelapseSettingsFilename = 'public/timelapse_settings.json'
 
 global.connectedWebSockets = []
 
+global.stopTimelapseTrigger = false
+
 function execPromise(cmd) {
   return new Promise((resolve, reject) => {
     exec(cmd, (error, stdout, stderr) => {
@@ -53,15 +55,6 @@ function saveData (data, path) {
     fs.writeFileSync(path, JSON.stringify(data))
   } catch (err) {
     console.error(err)
-  }
-}
-
-function loadData(path) {
-  try {
-    return fs.readFileSync(path, 'utf8')
-  } catch (err) {
-    console.error(err)
-    return false
   }
 }
 
@@ -229,6 +222,7 @@ async function startTimelapse(){
 
     var execCommand = [gphoto2, captureImageAndDownloadFlag, filenameFlag+filepath, forceOverwriteFlag].join(' ')
     console.log('Running...', execCommand)
+
     try {
 
       var response = await execPromise(execCommand)
@@ -245,6 +239,13 @@ async function startTimelapse(){
       var estimatedTime = (global.timelapseSettings['timelapseTime'])-((index+1)*interval)
       console.log(`Waiting... Estimated time remaining: ${estimatedTime} seconds...`)
       global.progress['timeUntilNextFrame'] = remainingTime/1000
+
+      if (global.stopTimelapseTrigger){
+        global.stopTimelapseTrigger = false
+        console.log('Stop timelapse requested!')
+        global.progress['running'] = false 
+        return
+      }
 
     }
 
@@ -293,6 +294,16 @@ async function startTimelapse(){
 }
 
 function initialization(){
+
+  const loadData = (path) => {
+                   try {
+                       return fs.readFileSync(path, 'utf8')
+                     } catch (err) {
+                       console.error(err)
+                       return false
+                     }
+                   }
+
   global.timelapseSettings = JSON.parse(loadData(timelapseSettingsFilename))
   console.log('Previous timelapse settings:', global.timelapseSettings)
   continuousPollCameraConnection()
@@ -347,7 +358,14 @@ wss.on('connection', function connection(ws) {
     }
 
     else if (messageJSON['type'] == 'getProgress'){
-      ws.send(prepPayload('progress',global.progress))
+      ws.send(prepPayload('progress', global.progress))
+    }
+
+    else if (messageJSON['type'] == 'stopTimelapse'){
+      // only trigger when running timelapse
+      if (global.progress['running']) {
+        global.stopTimelapseTrigger = true
+      }
     }
 
   })
