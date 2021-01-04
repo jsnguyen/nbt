@@ -10,21 +10,11 @@
   font-family: "Courier Prime";
 } 
 
-html {
-  /* overflow: hidden; */ /*  Disable scrollbars */
-  /* display: block;  *//* No floating content on sides */
-}
-
 body {
   margin: 0px;
   border: 0;
   background-color: #000000;
   color: #FFFFFF;
-}
-
-.centering {
-  display: flex;
-  justify-content: center;
 }
 
 canvas {
@@ -37,73 +27,9 @@ canvas {
   border-radius: 2px;
 }
 
-table {
-  table-layout: fixed;
-  display: block;
-  margin-top: auto;
-  margin-bottom: 2%;
-  margin-left: auto;
-  margin-right: auto;
-  width: 90%;
-  border:none;
-  border-collapse: collapse;
-  background-color: #778899;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
-th, td {
-  width: calc(100%/12);
-  text-align: center;
-  vertical-align: middle;
-  border-left: 1px solid #FFFFFF;
-  border-right: 1px solid #FFFFFF;
-  padding: 4px;
-}
-
-th:first-child, td:first-child {
-  border-left: none;
-}
-
-th:last-child, td:last-child {
-  border-right: none;
-}
-
-#myProgress {
-  margin: auto;
-  width: 90%;
-  background-color: #ddd;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-
-#myBar {
-  width: 0%;
-  height: 10px;
-  background-color: #008000;
-  color: white;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-
-.percentage {
-  float: left;
-  text-align: left;
-  width: calc(100%/3);
-}
-
-.time{
-  float: left;
-  text-align: center;
-  width: calc(100%/3);
-}
-
-
-.number {
-  float: left;
-  text-align: right;
-  width: calc(100%/3);
-}
+/**********************/
+/* Progress Indicator */
+/**********************/
 
 .progressIndicators{
   margin-top: 2%;
@@ -114,17 +40,92 @@ th:last-child, td:last-child {
   width: 90%;
 }
 
-.settings{
-  margin-top: 2%;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  width: 90%;
+.progressIndicatorPercentage {
+  float: left;
+  text-align: left;
+  width: calc(100%/3);
 }
 
-/* The Modal (background) */
-.modal {
+.progressIndicatorTime{
+  float: left;
+  text-align: center;
+  width: calc(100%/3);
+}
+
+.progressIndicatorNumber {
+  float: left;
+  text-align: right;
+  width: calc(100%/3);
+}
+
+/****************/
+/* Progress Bar */
+/****************/
+
+.progressBarBackground {
+  margin: auto;
+  width: 90%;
+  background-color: #ddd;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.progressBar{
+  width: 0%;
+  height: 10px;
+  background-color: #008000;
+  color: white;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+/************/
+/* Bar Menu */
+/************/
+
+.barMenuRow{
+  display: block;
+  margin: 0 auto;
+  width: 90%;
+  background-color: #696969;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.cameraSetting {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 10px;
+}
+
+.barMenuButton{
+  float: right;
+  vertical-align: top;
+  font-family: "FontAwesome";
+  background-color: rgb(0,0,0,0);
+  border: none;
+  color: white;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.barMenuButton:hover {
+  background-color: #D3D3D3;
+}
+
+.cameraConnectedDot{
+  font-family: "FontAwesome";
+  float: right;
+  background-color: rgb(0,0,0,0);
+  color: white;
+  padding: 10px;
+}
+
+/*********/
+/* Modal */
+/*********/
+
+.timelapseSettingsModal {
   display: none; /* Hidden by default */
   margin: auto;
   position: fixed;
@@ -142,8 +143,7 @@ th:last-child, td:last-child {
   animation-duration: 0.4s
 }
 
-/* Modal Content */
-.modal-content {
+.timelapseSettingsModalContent{
   margin: auto;
   position: fixed;
   left: 50%;
@@ -157,35 +157,38 @@ th:last-child, td:last-child {
   animation-duration: 0.4s
 }
 
-/* The Close Button */
-.close {
-  color: white;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.modal-header {
+.timelapseSettingsModalHeader {
   margin: auto;
   padding: 2px 16px;
   background-color: #708090;
   color: white;
 }
 
-.modal-body {
+.timelapseSettingsCloseButton {
+  color: white;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.timelapseModalHeaderTitle {
+  margin: 1%;
+  color: #FFFFFF;
+}
+
+.timelapseSettingsModalBody {
   margin: 0 auto;
   padding: 2px 16px;
   color: black;
 }
 
-/* Add Animation */
+.timelapseSettingsCloseButton:hover,
+.timelapseSettingsCloseButton:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 @-webkit-keyframes slideIn {
   from {bottom: -300px; opacity: 0}
   to {bottom: 0; opacity: 1}
@@ -206,51 +209,6 @@ th:last-child, td:last-child {
   to {opacity: 1}
 }
 
-#settings {
-  margin: 1%;
-  color: #FFFFFF;
-}
-
-.cardRow{
-  display: flex;
-  justify-content: center;
-  margin: 0 auto;
-  width: 80%;
-}
-
-.card {
-  display: block;
-  width: 20%;
-  margin: 10px;
-}
-
-.cardHeader {
-  padding: 10px;
-  text-align: center;
-  margin: 0 auto;
-  background-color: #2F4F4F;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
-
-.cardFooter {
-  padding: 10px;
-  text-align: center;
-  margin: 0 auto;
-  background-color: #708090;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
-.settingsRow {
-  display: block;
-  margin: 0 auto;
-  width: 90%;
-  background-color: #696969;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-
 .timelapseSettingsRow {
   display: block;
   margin: 0 auto;
@@ -259,60 +217,13 @@ th:last-child, td:last-child {
   background-color: #696969;
 }
 
-
-.settingLeft {
-  display: inline-block;
-  margin: 0 auto;
-  padding-right: 10px;
-  padding-left: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.settingRight {
-  display: inline-block;
-  margin: 0 auto;
-  padding-left: 10px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-
-.setting {
+.timelapseSetting {
   display: inline-block;
   margin: 0 auto;
   padding: 10px;
 }
 
-.timelapseSettingsButton {
-  font-family: "FontAwesome";
-  float: right;
-  background-color: rgb(0,0,0,0);
-  border: none; /* Remove borders */
-  color: white; /* White text */
-  padding: 10px; /* Some padding */
-  cursor: pointer; /* Mouse pointer on hover */
-}
-
-.cameraConnected{
-  float: right;
-  padding: 10px;
-}
-
-.cameraConnectedDot{
-  font-family: "FontAwesome";
-  float: right;
-  background-color: rgb(0,0,0,0);
-  border: none; /* Remove borders */
-  color: white; /* White text */
-  padding: 10px; /* Some padding */
-}
-
-/* Darker background on mouse-over */
-.timelapseSettingsButton:hover {
-  background-color: #D3D3D3;
-}
-
-.form{
+.timelapseSettingsInput {
   width: 100px;
   padding: 10px;
   text-align: center;

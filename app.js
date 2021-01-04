@@ -10,8 +10,11 @@ var app = express()
 app.use(express.static(__dirname + '/public'))
 app.use(express.json())
 
+//Constant Variables
 const port = 8131
+const timelapseSettingsFilename = 'public/timelapse_settings.json'
 
+// Global State Variables
 global.progress = {running: false,
                    framesLeft: 0,
                    frameTotal: 0,
@@ -19,7 +22,8 @@ global.progress = {running: false,
                    interval: 0}
 
 global.timelapseSettings = {timelapseTime: 0,
-                            clipLength: 0}
+                            clipLength: 0,
+                            framesPerSecond: 24}
 
 global.cameraParameters = {'Focal Length': null,
                            'F-Number': null,
@@ -32,12 +36,14 @@ global.cameraParameters = {'Focal Length': null,
 global.previousJPG = ''
 global.minimumTime = 9.2405 // as measured by measure_minimum_time.sh
 global.cameraConnected = false
-const timelapseSettingsFilename = 'public/timelapse_settings.json'
+global.stopTimelapse = false
 
-global.connectedWebSockets = []
+// Simple message passing with the type and the payload
+function prepPayload(type, data){
+  return JSON.stringify({type: type, payload: data})
+}
 
-global.stopTimelapseTrigger = false
-
+// Async exec, but with promises!
 function execPromise(cmd) {
   return new Promise((resolve, reject) => {
     exec(cmd, (error, stdout, stderr) => {
@@ -50,20 +56,16 @@ function execPromise(cmd) {
   })
 }
 
-function saveData (data, path) {
-  try {
-    fs.writeFileSync(path, JSON.stringify(data))
-  } catch (err) {
-    console.error(err)
-  }
-}
-
+// Made a sleep function to time timelapse stuff correctly
 function sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   });
 } 
 
+// Queries whether a camera is connected
+// Just a simple check on the number of lines when output
+// Beware! Not a very smart function...
 function pollCameraConnection() {
   var gphoto2 = 'gphoto2'
   var autoDetectFlag = '--auto-detect'
@@ -98,6 +100,8 @@ async function continuousPollCameraConnection() {
   }
 }
 
+// Gets all the relevant camera parameters
+// The camera parameters names need to match the camera parameters as listed by gphoto2
 async function getCameraParameters() {
   var gphoto2 = 'gphoto2'
   var getAllConfigFlag = '--list-all-config'
@@ -135,14 +139,16 @@ async function getCameraParameters() {
       console.log(error)
     }
   }
+
 }
 
-function getLatestJPG(){
+// Gets the latest image file and copies it to the public directory for access by a client
+function getLatestImage(){
 
   const getDirectories = source =>
-    fs.readdirSync(source, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name)
+  fs.readdirSync(source, { withFileTypes: true })
+  .filter(dirent => dirent.isDirectory())
+  .map(dirent => dirent.name)
   
   nbtPhotoDir = 'public/NBT_photos'
   nbtDirectories = getDirectories(nbtPhotoDir)
@@ -167,19 +173,14 @@ function getLatestJPG(){
 
   global.previousJPG = latestFilepath
   latestFile = 'public/latest.jpg'
-
   console.log(latestFilepath, latestFile)
-
   fs.copyFileSync(latestFilepath, latestFile)
 
   return
-
 }
 
-function prepPayload(type, data){
-  return JSON.stringify({type: type, payload: data})
-}
-
+// Asynchronously start the timelapse
+// This function is built so that you can run other things while the timelapse is running
 async function startTimelapse(){
   if (global.progress['running']){
     console.log('ERROR: Can\'t start timelapse! Already running!')
@@ -208,6 +209,7 @@ async function startTimelapse(){
   global.progress['frameTotal'] = nFrames
   global.progress['interval'] = interval
   console.log('Interval: ', interval)
+  wss.broadcast()
 
   var errorCounter = 0
   var maxNError = 3
@@ -233,20 +235,33 @@ async function startTimelapse(){
 
       var remainingTime = interval*1000 - (postCaptureTime - startTime)
 
-      await sleep(remainingTime)
-      console.log(`Remaining time in loop ${remainingTime}ms`)
-
       var estimatedTime = (global.timelapseSettings['timelapseTime'])-((index+1)*interval)
       console.log(`Waiting... Estimated time remaining: ${estimatedTime} seconds...`)
       global.progress['timeUntilNextFrame'] = remainingTime/1000
 
-      if (global.stopTimelapseTrigger){
-        global.stopTimelapseTrigger = false
+      wss.broadcast()
+      console.log(`Waiting for ${remainingTime}ms`)
+
+      // do a for loop so we can still check stuff 
+      for(let i=0; i<10; i++){
+
+        await sleep(remainingTime/10)
+
+        if (global.stopTimelapse){
+          console.log('Breaking out of sleep, stopping timelapse!')
+          break
+        }
+
+      }
+      console.log('Done waiting.')
+
+      if (global.stopTimelapse){
+        global.stopTimelapse = false
         console.log('Stop timelapse requested!')
         global.progress['running'] = false 
+        wss.broadcast()
         return
       }
-
     }
 
     catch (error) {
@@ -293,25 +308,27 @@ async function startTimelapse(){
 
 }
 
-function initialization(){
+// Initialization
+(() => {
 
-  const loadData = (path) => {
-                   try {
-                       return fs.readFileSync(path, 'utf8')
-                     } catch (err) {
-                       console.error(err)
-                       return false
-                     }
-                   }
+  // load the timelapse settings
+  global.timelapseSettings = JSON.parse(
+  ((path) => {
+    try {
+      return fs.readFileSync(path, 'utf8')
+    }
+    catch (err) {
+      console.error(err)
+    }
+  })(timelapseSettingsFilename))
 
-  global.timelapseSettings = JSON.parse(loadData(timelapseSettingsFilename))
   console.log('Previous timelapse settings:', global.timelapseSettings)
   continuousPollCameraConnection()
   getCameraParameters()
-}
+})()
 
-initialization()
-
+// Start our http and websocket server...
+// Works on the same shared port
 const server = http.createServer( app )
 const wss = new WebSocket.Server({ server: server })
 
@@ -326,31 +343,40 @@ app.get('/', function(req, res) {
 wss.on('connection', function connection(ws) {
   console.log('SERVER: Websocket open!')
 
+  // Need to send some stuff on initial connection
   ws.send(prepPayload('cameraConnected',global.cameraConnected))
   ws.send(prepPayload('cameraParameters',global.cameraParameters))
+  ws.send(prepPayload('progress', global.progress))
+  getLatestImage()
+  ws.send(prepPayload('getLatestImageReply',true))
+  ws.send(prepPayload('currentTimelapseParameters', global.timelapseSettings))
 
+  // Respond to various queries by the client
   ws.on('message', function incoming(message) {
     var messageJSON = JSON.parse(message)
     console.log('SERVER: Received ', messageJSON)
 
-    if (messageJSON['type'] == 'getLatestJPG'){
-      getLatestJPG()
-      ws.send(prepPayload('getLatestJPGReply',true))
+    if (messageJSON['type'] == 'getLatestImage'){
+      getLatestImage()
+      ws.send(prepPayload('getLatestImageReply',true))
     }
 
     else if (messageJSON['type'] == 'inputTimelapseParameters'){
       global.timelapseSettings['clipLength'] = Number(messageJSON['payload']['clipLength'])
       global.timelapseSettings['timelapseTime'] = Number(messageJSON['payload']['timelapseTime'])
 
-      const storeData = (data, path) => {
-        try {
-          fs.writeFileSync(path, JSON.stringify(data))
-        } catch (err) {
-          console.error(err)
-        }
+      // save the timelapse settings
+      try {
+        fs.writeFileSync(timelapseSettingsFilename, JSON.stringify(global.timelapseSettings))
+      } 
+      catch (err) {
+        console.error(err)
       }
-      storeData(global.timelapseSettings, timelapseSettingsFilename)
 
+    }
+
+    else if (messageJSON['type'] == 'getCurrentTimelapseParameters'){
+      ws.send(prepPayload('currentTimelapseParameters', global.timelapseSettings))
     }
 
     else if (messageJSON['type'] == 'startTimelapse'){
@@ -364,11 +390,27 @@ wss.on('connection', function connection(ws) {
     else if (messageJSON['type'] == 'stopTimelapse'){
       // only trigger when running timelapse
       if (global.progress['running']) {
-        global.stopTimelapseTrigger = true
+        global.stopTimelapse = true
       }
     }
 
-  })
+    else if (messageJSON['type'] == 'resetTimelapse'){
+      global.progress = {running: false,
+                         framesLeft: 0,
+                         frameTotal: 0,
+                         timeUntilNextFrame: 0,
+                         interval: 0}
+      ws.send(prepPayload('progress', global.progress))
+    }
 
+  })
 })
 
+// broadcast function that can be called anywhere
+wss.broadcast = function broadcast(msg) {
+  wss.clients.forEach(function each(ws) {
+    ws.send(prepPayload('progress', global.progress))
+    getLatestImage()
+    ws.send(prepPayload('getLatestImageReply',true))
+  });
+};

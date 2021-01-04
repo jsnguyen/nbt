@@ -1,66 +1,15 @@
-var progressInterval = null
-
+// Simple message passing with the type and the payload
 function prepPayload(type, data){
   return JSON.stringify({type: type, payload: data})
 }
 
-function getLatestJPG() {
-  ws.send(prepPayload('getLatestJPG',true))
+// Ask for the latest image
+function getLatestImage() {
+  ws.send(prepPayload('getLatestImage',true))
   updateImage()
 }
 
-function getProgress() {
-  ws.send(prepPayload('getProgress',true))
-}
- 
-function updateProgress(messageJSON) {
-
-  var elem = document.getElementById("myBar");
-  if (messageJSON['frameTotal'] == 0){
-    var percentage = 0
-  } else {
-    var percentage = messageJSON['framesLeft']/messageJSON['frameTotal']
-  }
-
-  document.getElementById("progressPercentage").innerHTML = String((percentage*100).toFixed(2)) + '%'
-  document.getElementById("progressInterval").innerHTML = String(messageJSON['interval']) + 's'
-  document.getElementById("progressIndex").innerHTML = String(messageJSON['framesLeft']) + ' of ' + String(messageJSON['frameTotal'])
-  let width = percentage*100
-  console.log(width)
-
-  elem.style.width = (isFinite(width) ? String(width) : '0') + '%'
-
-  if ( progressInterval && ! messageJSON['running']){
-    clearInterval(progressInterval)
-  }
-
-}
-
-function startTimelapse() {
-  ws.send(prepPayload('startTimelapse',true))
-
-  progressInterval = setInterval( () => {
-    getProgress(progressInterval)
-  }, 1000);
-
-}
-
-function stopTimelapse() {
-  if (confirm('Stop timelapse?')){
-  ws.send(prepPayload('stopTimelapse',true))
-  clearInterval(progressInterval)
-  }
-}
-
-function submitTimelapseSettings() {
-  var timelapseTime = document.getElementById("timelapseTimeInput").value;
-  var clipLength = document.getElementById("clipLengthInput").value;
-  var payload = {timelapseTime: timelapseTime, clipLength: clipLength}
-
-  ws.send(prepPayload('inputTimelapseParameters',payload))
-}
-
-
+// Updates the canvas nicely without having to swap the src of html imgs
 function updateImage(){
   var x=0, y=0
   var img = new Image()
@@ -78,53 +27,119 @@ function updateImage(){
     context.drawImage(img, 0, 0, canvas.width, img.height*scalingFactor)
   }
 
-  img.src = img.src.split('?')[0] + '?d=' + Date.now()
+}
+
+// Ask for the current progress
+function getProgress() {
+  ws.send(prepPayload('getProgress',true))
+}
+ 
+// Updates the progress on the progress bar
+function updateProgress(messageJSON) {
+
+  var elem = document.getElementById("progressBar");
+  if (messageJSON['frameTotal'] == 0){
+    var percentage = 0
+  } else {
+    var percentage = messageJSON['framesLeft']/messageJSON['frameTotal']
+  }
+
+  document.getElementById("progressPercentage").innerHTML = String((percentage*100).toFixed(2)) + '%'
+  document.getElementById("progressInterval").innerHTML = String(messageJSON['interval']) + 's'
+  document.getElementById("progressIndex").innerHTML = String(messageJSON['framesLeft']) + ' of ' + String(messageJSON['frameTotal'])
+
+  var runningElement = document.getElementById("running")
+  if(messageJSON['running']){
+    runningElement.innerHTML = 'Running!'
+    runningElement.style.color = '#66ff33'
+  }
+  else {
+    runningElement.innerHTML = 'Stopped!'
+    runningElement.style.color = '#ff0000'
+  }
+
+  let width = percentage*100
+  elem.style.width = (isFinite(width) ? String(width) : '0') + '%'
 
 }
 
-function main(){
+// Ask for the current parameters for the timelapse in the modal
+function getTimelapseParameters() {
+  ws.send(prepPayload('getCurrentTimelapseParameters',true))
+}
+
+// Updates the timelapse settings in the modal
+function updateTimelapseParameters(payload) {
+  document.getElementById("timelapseTimeInput").value = Number(payload['timelapseTime'])
+  document.getElementById("clipLengthInput").value = Number(payload['clipLength'])
+  document.getElementById("framesPerSecond").innerHTML = payload['framesPerSecond']+' fps'
+}
+
+// Start the timelapse
+function startTimelapse() {
+  ws.send(prepPayload('startTimelapse',true))
+}
+
+// Stop the timelapse
+function stopTimelapse() {
+  if (confirm('Stop timelapse?')){
+    ws.send(prepPayload('stopTimelapse',true))
+  }
+}
+
+// Reset the timelapse, also resets the progress bar
+function resetTimelapse(){
+  if (confirm('Reset timelapse?')){
+    ws.send(prepPayload('resetTimelapse',true))
+  }
+}
+
+// Submit the timelapse settings on close of the modal
+function submitTimelapseSettings() {
+  var timelapseTime = document.getElementById("timelapseTimeInput").value;
+  var clipLength = document.getElementById("clipLengthInput").value;
+  var payload = {timelapseTime: timelapseTime, clipLength: clipLength}
+
+  ws.send(prepPayload('inputTimelapseParameters',payload))
+}
+
+// Initialization
+function main() {
   updateImage()
 
   document.addEventListener('DOMContentLoaded', () => {
-    // Get the modal
-    var modal = document.getElementById("myModal");
 
-    // Get the button that opens the modal
-    var btn = document.getElementById("timelapseSettingsButton");
+    var timelapseSettingsModal = document.getElementById("timelapseSettingsModal");
+    var timelapseSettingsButton = document.getElementById("timelapseSettingsButton");
+    var timelapseSettingsCloseButton = document.getElementsByClassName("timelapseSettingsCloseButton")[0];
 
-    // Get the <span> element that closes the modal
-    var span = document.getElementsByClassName("close")[0];
-
-    // When the user clicks the button, open the modal
-    btn.onclick = function() {
-      modal.style.display = "block";
+    timelapseSettingsButton.onclick = function() {
+      timelapseSettingsModal.style.display = "block";
     }
 
-    // When the user clicks on <span> (x), close the modal
-    span.onclick = function() {
-      modal.style.display = "none";
+    timelapseSettingsCloseButton.onclick = function() {
+      timelapseSettingsModal.style.display = "none";
       submitTimelapseSettings()
     }
 
-    // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-      if (event.target == modal) {
-        modal.style.display = "none";
+      if (event.target == timelapseSettingsModal) {
+        timelapseSettingsModal.style.display = "none";
         submitTimelapseSettings()
       }
     }
-  });
-
+  })
 }
+main()
 
-const ws = new WebSocket('ws://192.168.0.110:8131')
+// Start a new websocket connection
+const ws = new WebSocket("ws://" + location.host)
 
 ws.onopen = function open() {
   console.log('CLIENT: Websocket open!')
-  getLatestJPG()
-  updateProgress()
 }
 
+// Respond to queries from the server...
 ws.onmessage = function incoming(message) {
   var messageJSON = JSON.parse(message.data)
   console.log('CLIENT: Received ', messageJSON)
@@ -142,7 +157,7 @@ ws.onmessage = function incoming(message) {
 
   }
 
-  else if(messageJSON['type'] == 'getLatestJPGReply'){
+  else if(messageJSON['type'] == 'getLatestImageReply'){
     if (messageJSON['payload']){
       updateImage()
     }
@@ -159,6 +174,8 @@ ws.onmessage = function incoming(message) {
     updateProgress(messageJSON['payload'])
   }
 
-}
+  else if(messageJSON['type'] == 'currentTimelapseParameters'){
+    updateTimelapseParameters(messageJSON['payload'])
+  }
 
-main()
+}

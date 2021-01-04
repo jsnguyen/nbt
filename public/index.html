@@ -18,46 +18,47 @@
   <script src="nbt.js"></script>
 
   <div class="progressIndicators">
-    <div id='progressPercentage' class="percentage">0%</div>
-    <div id='progressInterval' class="time">0s</div>
-    <div id='progressIndex' class="number">0 of 0</div>
+    <div id='progressPercentage' class="progressIndicatorPercentage">0%</div>
+    <div id='progressInterval' class="progressIndicatorTime">0s</div>
+    <div id='progressIndex' class="progressIndicatorNumber">0 of 0</div>
   </div>
 
-  <div id="myProgress">
-    <div id="myBar"></div>
+  <div class="progressBarBackground">
+    <div id="progressBar" class="progressBar"></div>
   </div>
 
-  <div id="cameraSettings" class="settingsRow">
-    <div id="focalLength" class="settingLeft">No data.</div>
-    <div id="focalRatio" class="setting"></div>
-    <div id="ISO" class="setting"></div>
-    <div id="shutterSpeed" class="settingRight"></div>
+  <div id="cameraSettings" class="barMenuRow">
+    <div id="focalLength" class="cameraSetting">No data.</div>
+    <div id="focalRatio" class="cameraSetting"></div>
+    <div id="ISO" class="cameraSetting"></div>
+    <div id="shutterSpeed" class="cameraSetting"></div>
+    <div id="running" class="cameraSetting"></div>
 
-    <button id="timelapseSettingsButton" class="timelapseSettingsButton"><i class="fa fa-sliders"></i></button>
-    <button id="stopButton" onclick="stopTimelapse()" class="timelapseSettingsButton"><i id="stopButtonIcon" class="fa fa-stop"></i></button>
-    <button id="startButton" onclick="startTimelapse()" class="timelapseSettingsButton"><i id="startButtonIcon" class="fa fa-play"></i></button>
-    <button id="latestButton" class="timelapseSettingsButton" onclick="getLatestJPG()"><i id="latestButtonIcon" class="fa fa-camera-retro"></i></button>
+    <button id="timelapseSettingsButton" class="barMenuButton"><i class="fa fa-sliders"></i></button>
+    <button id="resetButton" class="barMenuButton" onclick="resetTimelapse()"><i id="resetButtonIcon" class="fa fa-refresh"></i></button>
+    <button id="stopButton" onclick="stopTimelapse()" class="barMenuButton"><i id="stopButtonIcon" class="fa fa-stop"></i></button>
+    <button id="startButton" onclick="startTimelapse()" class="barMenuButton"><i id="startButtonIcon" class="fa fa-play"></i></button>
+    <button id="latestButton" class="barMenuButton" onclick="getLatestJPG()"><i id="latestButtonIcon" class="fa fa-camera-retro"></i></button>
 
     <div class="cameraConnectedDot"> <i id="cameraConnectedDotIcon" class="fa fa-circle-o"></i> </div>
   </div>
 
 
 
-  <div id="myModal" class="modal">
+  <div id="timelapseSettingsModal" class="timelapseSettingsModal">
 
-    <div class="modal-content">
+    <div class="timelapseSettingsModalContent">
 
-      <div class="modal-header">
-        <span class="close">&times;</span>
-        <div id="settings">Settings</div>
+      <div class="timelapseSettingsModalHeader">
+        <span class="timelapseSettingsCloseButton">&times;</span>
+        <div class="timelapseModalHeaderTitle">Settings</div>
       </div>
 
-      <div class="modal-body">
-        <div id="timelapseSettings" class="timelapseSettingsRow" style="width: 100%">
-          <div id="timelapseTime" class="settingLeft"><input id="timelapseTimeInput" class="form" placeholder="timelapse time" type="number" min=0></input></div>
-          <div id="clipLength" class="setting"><input id="clipLengthInput" class="form" placeholder="clip length" type="number" min=0></input></div>
-          <div id="interval" class="setting"> 5s</div>
-          <div id="framesPerSecond" class="settingRight">24 fps</div>
+      <div class="timelapseSettingsModalBody">
+        <div id="timelapseSettings" class="timelapseSettingsRow">
+          <div id="timelapseTime" class="timelapseSetting"><input id="timelapseTimeInput" class="timelapseSettingsInput" placeholder="timelapse time" type="number" min=0></input></div>
+          <div id="clipLength" class="timelapseSetting"><input id="clipLengthInput" class="timelapseSettingsInput" placeholder="clip length" type="number" min=0></input></div>
+          <div id="framesPerSecond" class="timelapseSetting"></div>
         </div>
       </div>
 
