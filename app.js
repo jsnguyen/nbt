@@ -13,6 +13,7 @@ app.use(express.json())
 //Constant Variables
 const port = 8131
 const timelapseSettingsFilename = 'public/timelapse_settings.json'
+const photoDir = 'public/NBT_photos/'
 
 // Global State Variables
 global.progress = {running: false,
@@ -91,13 +92,6 @@ function pollCameraConnection() {
       reject(stderr)
     }
   });
-}
-
-async function continuousPollCameraConnection() {
-  while(!global.cameraConnected){
-    let response = await pollCameraConnection()
-    console.log('Camera connection status:', response)
-  }
 }
 
 // Gets all the relevant camera parameters
@@ -194,7 +188,6 @@ async function startTimelapse(){
   var date = new Date()
   var datetimeISO = date.toISOString()
 
-  var photoDir = 'public/NBT_photos/'
 
   var saveDir = path.join(photoDir,datetimeISO)
   fs.mkdirSync(saveDir);
@@ -228,13 +221,9 @@ async function startTimelapse(){
     try {
 
       var response = await execPromise(execCommand)
-
       global.progress['framesLeft'] = index+1
-
       var postCaptureTime = new Date()
-
       var remainingTime = interval*1000 - (postCaptureTime - startTime)
-
       var estimatedTime = (global.timelapseSettings['timelapseTime'])-((index+1)*interval)
       console.log(`Waiting... Estimated time remaining: ${estimatedTime} seconds...`)
       global.progress['timeUntilNextFrame'] = remainingTime/1000
@@ -309,7 +298,7 @@ async function startTimelapse(){
 }
 
 // Initialization
-(() => {
+(async () => {
 
   // load the timelapse settings
   global.timelapseSettings = JSON.parse(
@@ -323,8 +312,14 @@ async function startTimelapse(){
   })(timelapseSettingsFilename))
 
   console.log('Previous timelapse settings:', global.timelapseSettings)
-  continuousPollCameraConnection()
+
+  while(!global.cameraConnected){
+    let response = await pollCameraConnection()
+    console.log('Camera connection status:', response)
+  }
+
   getCameraParameters()
+
 })()
 
 // Start our http and websocket server...

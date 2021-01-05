@@ -84,7 +84,8 @@ canvas {
 /************/
 
 .barMenuRow{
-  display: block;
+  display: flex;
+  justify-content: space-between;
   margin: 0 auto;
   width: 90%;
   background-color: #696969;
@@ -92,18 +93,29 @@ canvas {
   border-bottom-right-radius: 5px;
 }
 
+.cameraConnectedDot{
+  display: inline-block;
+  background-color: rgb(0,0,0,0);
+  color: white;
+  padding: 10px;
+}
+
+.cameraParameters{
+}
+
+
 .cameraSetting {
   display: inline-block;
   margin: 0 auto;
   padding: 10px;
 }
 
+.barMenuButtons{
+}
+
 .barMenuButton{
-  float: right;
-  vertical-align: top;
-  font-family: "FontAwesome";
+  border: none; /* this seems to be problematic in alignment */
   background-color: rgb(0,0,0,0);
-  border: none;
   color: white;
   padding: 10px;
   cursor: pointer;
@@ -111,14 +123,6 @@ canvas {
 
 .barMenuButton:hover {
   background-color: #D3D3D3;
-}
-
-.cameraConnectedDot{
-  font-family: "FontAwesome";
-  float: right;
-  background-color: rgb(0,0,0,0);
-  color: white;
-  padding: 10px;
 }
 
 /*********/
