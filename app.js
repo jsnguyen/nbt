@@ -144,12 +144,16 @@ function getLatestImage(){
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name)
   
-  nbtPhotoDir = 'public/NBT_photos'
-  nbtDirectories = getDirectories(nbtPhotoDir)
+  nbtDirectories = getDirectories(photoDir)
+
+  if (nbtDirectories.length == 0 ) {
+    console.log('WARNING: No folders found in latest photos folder!')
+    return
+  }
 
   latestDatetime  = nbtDirectories.sort().pop()
 
-  latestDirectory = path.join(nbtPhotoDir, latestDatetime)
+  latestDirectory = path.join(photoDir, latestDatetime)
   basenames = fs.readdirSync(latestDirectory)
 
   latestBasename = basenames.filter( a => a.includes('.jpg')).pop()
@@ -159,7 +163,7 @@ function getLatestImage(){
     return
   }
 
-  latestFilepath = path.join(nbtPhotoDir, latestDatetime, latestBasename)
+  latestFilepath = path.join(photoDir, latestDatetime, latestBasename)
   if (latestFilepath == global.previousJPG){
     console.log('File is the same! Not changing...')
     return
@@ -187,7 +191,6 @@ async function startTimelapse(){
 
   var date = new Date()
   var datetimeISO = date.toISOString()
-
 
   var saveDir = path.join(photoDir,datetimeISO)
   fs.mkdirSync(saveDir);
