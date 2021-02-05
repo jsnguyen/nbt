@@ -145,14 +145,29 @@ function getLatestImage(){
   fs.readdirSync(source, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name)
+<<<<<<< HEAD
+=======
+  
+  nbtDirectories = getDirectories(photoDir)
+
+  if (nbtDirectories.length == 0 ) {
+    console.log('WARNING: No folders found in latest photos folder!')
+    return
+  }
+>>>>>>> df44e849a9958f5a0f1a038adc81759725130ad9
 
   var modISORegex = new RegExp(/\d{4}-[01]\d-[0-3]\dT[0-2]\d[0-5]\d[0-5]\d\.\d+([+-][0-2]\d[0-5]\d|Z)/,'g')
   var nbtDirectories = getDirectories(photoDir).filter( (str) => {return str.match(modISORegex)})
 
+<<<<<<< HEAD
   if (!nbtDirectories.length) {
     console.log('WARNING: No folders found in the photo directory!')
     return
   }
+=======
+  latestDirectory = path.join(photoDir, latestDatetime)
+  basenames = fs.readdirSync(latestDirectory)
+>>>>>>> df44e849a9958f5a0f1a038adc81759725130ad9
 
   var latestDatetime  = nbtDirectories.sort().pop()
   var latestDirectory = path.join(photoDir, latestDatetime)
@@ -164,7 +179,11 @@ function getLatestImage(){
     return
   }
 
+<<<<<<< HEAD
   var latestFilepath = path.join(photoDir, latestDatetime, latestBasename)
+=======
+  latestFilepath = path.join(photoDir, latestDatetime, latestBasename)
+>>>>>>> df44e849a9958f5a0f1a038adc81759725130ad9
   if (latestFilepath == global.previousJPG){
     console.log('File is the same! Not changing...')
     return
@@ -191,7 +210,11 @@ async function startTimelapse(){
   var interval = global.timelapseSettings['timelapseTime']/nFrames
 
   var date = new Date()
+<<<<<<< HEAD
   var datetimeISO = date.toISOString().replace(/:/g,'')
+=======
+  var datetimeISO = date.toISOString()
+>>>>>>> df44e849a9958f5a0f1a038adc81759725130ad9
 
   var saveDir = path.join(photoDir,datetimeISO)
   fs.mkdirSync(saveDir);
