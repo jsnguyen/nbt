@@ -16,17 +16,19 @@ const timelapseSettingsFilename = 'public/timelapse_settings.json'
 const photoDir = 'public/NBT_photos/'
 
 // Global State Variables
-global.progress = {running: false,
+
+var global = {};
+global['progress'] = {running: false,
                    framesLeft: 0,
                    frameTotal: 0,
                    timeUntilNextFrame: 0,
                    interval: 0}
 
-global.timelapseSettings = {timelapseTime: 0,
+global['timelapseSettings'] = {timelapseTime: 0,
                             clipLength: 0,
                             framesPerSecond: 24}
 
-global.cameraParameters = {'Focal Length': null,
+global['cameraParameters'] = {'Focal Length': null,
                            'F-Number': null,
                            'Shutter Speed 2': null,
                            'ISO Speed': null,
@@ -34,10 +36,10 @@ global.cameraParameters = {'Focal Length': null,
                            'Light Meter': null}
 
 
-global.previousJPG = ''
-global.minimumTime = 9.2405 // as measured by measure_minimum_time.sh
-global.cameraConnected = false
-global.stopTimelapse = false
+global['previousJPG'] = ''
+global['minimumTime'] = 9.2405 // as measured by measure_minimum_time.sh
+global['cameraConnected'] = false
+global['stopTimelapse'] = false
 
 // Simple message passing with the type and the payload
 function prepPayload(type, data){
@@ -143,30 +145,33 @@ function getLatestImage(){
   fs.readdirSync(source, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
   .map(dirent => dirent.name)
-  
-  nbtPhotoDir = 'public/NBT_photos'
-  nbtDirectories = getDirectories(nbtPhotoDir)
 
-  latestDatetime  = nbtDirectories.sort().pop()
+  var modISORegex = new RegExp(/\d{4}-[01]\d-[0-3]\dT[0-2]\d[0-5]\d[0-5]\d\.\d+([+-][0-2]\d[0-5]\d|Z)/,'g')
+  var nbtDirectories = getDirectories(photoDir).filter( (str) => {return str.match(modISORegex)})
 
-  latestDirectory = path.join(nbtPhotoDir, latestDatetime)
-  basenames = fs.readdirSync(latestDirectory)
+  if (!nbtDirectories.length) {
+    console.log('WARNING: No folders found in the photo directory!')
+    return
+  }
 
-  latestBasename = basenames.filter( a => a.includes('.jpg')).pop()
+  var latestDatetime  = nbtDirectories.sort().pop()
+  var latestDirectory = path.join(photoDir, latestDatetime)
+  var basenames = fs.readdirSync(latestDirectory)
+  var latestBasename = basenames.filter( a => a.includes('.jpg')).pop()
 
   if (latestBasename == null) {
     console.log('WARNING: No file found in latest photos folder!')
     return
   }
 
-  latestFilepath = path.join(nbtPhotoDir, latestDatetime, latestBasename)
+  var latestFilepath = path.join(photoDir, latestDatetime, latestBasename)
   if (latestFilepath == global.previousJPG){
     console.log('File is the same! Not changing...')
     return
   }
 
   global.previousJPG = latestFilepath
-  latestFile = 'public/latest.jpg'
+  const latestFile = 'public/latest.jpg'
   console.log(latestFilepath, latestFile)
   fs.copyFileSync(latestFilepath, latestFile)
 
@@ -186,8 +191,7 @@ async function startTimelapse(){
   var interval = global.timelapseSettings['timelapseTime']/nFrames
 
   var date = new Date()
-  var datetimeISO = date.toISOString()
-
+  var datetimeISO = date.toISOString().replace(/:/g,'')
 
   var saveDir = path.join(photoDir,datetimeISO)
   fs.mkdirSync(saveDir);
@@ -299,6 +303,8 @@ async function startTimelapse(){
 
 // Initialization
 (async () => {
+
+  console.log('Initializing server...')
 
   // load the timelapse settings
   global.timelapseSettings = JSON.parse(
