@@ -59,7 +59,7 @@ function updateProgress(messageJSON) {
   }
 
   let width = percentage*100
-  elem.style.width = (isFinite(width) ? String(width) : '0') + '%'
+  elem.style.height = (isFinite(width) ? String(width) : '0') + '%'
 
 }
 
@@ -111,23 +111,22 @@ function main() {
 
     var timelapseSettingsModal = document.getElementById("timelapseSettingsModal");
     var timelapseSettingsButton = document.getElementById("timelapseSettingsButton");
-    var timelapseSettingsCloseButton = document.getElementsByClassName("timelapseSettingsCloseButton")[0];
 
     timelapseSettingsButton.onclick = function() {
       timelapseSettingsModal.style.display = "block";
     }
 
-    timelapseSettingsCloseButton.onclick = function() {
+
+  var windowOnClick = function(event) {
+    if (event.target == timelapseSettingsModal) {
       timelapseSettingsModal.style.display = "none";
       submitTimelapseSettings()
     }
+  }
 
-    window.onclick = function(event) {
-      if (event.target == timelapseSettingsModal) {
-        timelapseSettingsModal.style.display = "none";
-        submitTimelapseSettings()
-      }
-    }
+	window.addEventListener("click", windowOnClick)
+	window.addEventListener("touchend", windowOnClick)
+
   })
 }
 main()
@@ -164,10 +163,10 @@ ws.onmessage = function incoming(message) {
   }
 
   else if(messageJSON['type'] == 'cameraParameters'){
-    document.getElementById("focalLength").innerHTML = messageJSON['payload']['Focal Length']+'mm';
-    document.getElementById("focalRatio").innerHTML = messageJSON['payload']['F-Number'];
-    document.getElementById("ISO").innerHTML = 'ISO '+ messageJSON['payload']['ISO Speed'];
-    document.getElementById("shutterSpeed").innerHTML = messageJSON['payload']['Shutter Speed 2']+'s';
+    document.getElementById("focalLength").innerHTML = String(messageJSON['payload']['Focal Length'])+'mm';
+    document.getElementById("focalRatio").innerHTML = String(messageJSON['payload']['F-Number']);
+    document.getElementById("ISO").innerHTML = 'ISO '+ String(messageJSON['payload']['ISO Speed']);
+    document.getElementById("shutterSpeed").innerHTML = String(messageJSON['payload']['Shutter Speed 2'])+'s';
   }
 
   else if(messageJSON['type'] == 'progress'){

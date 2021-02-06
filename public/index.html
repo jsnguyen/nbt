@@ -14,40 +14,71 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   </head>
 
-  <canvas id="canvas"> </canvas>
   <script src="nbt.js"></script>
 
-  <div class="progressIndicators">
-    <div id='progressPercentage' class="progressIndicatorPercentage">0%</div>
-    <div id='progressInterval' class="progressIndicatorTime">0s</div>
-    <div id='progressIndex' class="progressIndicatorNumber">0 of 0</div>
+  <body>
+  <div class="content">
+  <div class="canvasContainer">
+    <canvas id="canvas"> </canvas>
   </div>
-
-  <div class="progressBarBackground">
-    <div id="progressBar" class="progressBar"></div>
+  <div class="contentFiller">
   </div>
+  <div id="cameraSettings" class="barMenu">
+    <div class="barMenuContent">
 
-  <div id="cameraSettings" class="barMenuRow">
+      <div class="barMenuInput">
 
+        <div class="barMenuButtonRow">
+          <div class="barMenuButton">
+            <button id="startButton" onclick="startTimelapse()"><i id="startButtonIcon" class="fa fa-play"></i></button>
+          </div>
+          <div class="barMenuButton">
+            <button id="stopButton" onclick="stopTimelapse()"><i id="stopButtonIcon" class="fa fa-stop"></i></button>
+          </div>
+        </div>
 
-    <div class="cameraParameters">
-      <div class="cameraConnectedDot"> <i id="cameraConnectedDotIcon" class="fa fa-circle-o"></i> </div>
-      <div id="focalLength" class="cameraSetting">No data.</div>
-      <div id="focalRatio" class="cameraSetting"></div>
-      <div id="ISO" class="cameraSetting"></div>
-      <div id="shutterSpeed" class="cameraSetting"></div>
-      <div id="running" class="cameraSetting"></div>
+        <div class="barMenuButtonRow">
+          <div class="barMenuButton">
+            <button id="latestButton" onclick="getLatestImage()"><i id="latestButtonIcon" class="fa fa-camera-retro"></i></button>
+          </div>
+          <div class="barMenuButton">
+            <button id="resetButton" onclick="resetTimelapse()"><i id="resetButtonIcon" class="fa fa-refresh"></i></button>
+          </div>
+        </div>
+
+        <div class="barMenuButtonRow">
+          <div class="barMenuButton">
+            <button id="timelapseSettingsButton">
+              <i class="fa fa-sliders"></i>
+            </button>
+          </div>
+          <div class="barMenuButton">
+            <button>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="progressBarBackground">
+        <div id="progressBar" class="progressBar"></div>
+      </div>
+
+      <div class="cameraParameters">
+        <div class="cameraSetting">
+          <i id="cameraConnectedDotIcon" class="fa faSmall fa-circle-o"></i>
+        </div>
+        <div id='progressPercentage' class="cameraSetting">0%</div>
+        <div id='progressInterval' class="cameraSetting">0s</div>
+        <div id='progressIndex' class="cameraSetting">0 of 0</div>
+        <div id="focalLength" class="cameraSetting"></div>
+        <div id="focalRatio" class="cameraSetting"></div>
+        <div id="ISO" class="cameraSetting"></div>
+        <div id="shutterSpeed" class="cameraSetting"></div>
+        <div id="running" class="cameraSetting"></div>
+      </div>
+
     </div>
-
-
-    <div class="barMenuButtons">
-      <button id="latestButton" class="barMenuButton" onclick="getLatestJPG()"><i id="latestButtonIcon" class="fa fa-camera-retro"></i></button>
-      <button id="startButton" onclick="startTimelapse()" class="barMenuButton"><i id="startButtonIcon" class="fa fa-play"></i></button>
-      <button id="stopButton" onclick="stopTimelapse()" class="barMenuButton"><i id="stopButtonIcon" class="fa fa-stop"></i></button>
-      <button id="resetButton" class="barMenuButton" onclick="resetTimelapse()"><i id="resetButtonIcon" class="fa fa-refresh"></i></button>
-      <button id="timelapseSettingsButton" class="barMenuButton"><i class="fa fa-sliders"></i></button>
-    <div>
-
   </div>
 
 
@@ -56,21 +87,27 @@
 
     <div class="timelapseSettingsModalContent">
 
-      <div class="timelapseSettingsModalHeader">
-        <span class="timelapseSettingsCloseButton">&times;</span>
-        <div class="timelapseModalHeaderTitle">Settings</div>
-      </div>
-
       <div class="timelapseSettingsModalBody">
         <div id="timelapseSettings" class="timelapseSettingsRow">
-          <div id="timelapseTime" class="timelapseSetting"><input id="timelapseTimeInput" class="timelapseSettingsInput" placeholder="timelapse time" type="number" min=0></input></div>
-          <div id="clipLength" class="timelapseSetting"><input id="clipLengthInput" class="timelapseSettingsInput" placeholder="clip length" type="number" min=0></input></div>
+
+          <div id="timelapseTime" class="timelapseSetting">
+            <input id="timelapseTimeInput" class="timelapseSettingsInput" placeholder="timelapse time" type="number" min=0>
+            </input>
+          </div>
+
+          <div id="clipLength" class="timelapseSetting">
+            <input id="clipLengthInput" class="timelapseSettingsInput" placeholder="clip length" type="number" min=0>
+            </input>
+          </div>
+
           <div id="framesPerSecond" class="timelapseSetting"></div>
+
         </div>
       </div>
 
     </div>
 
   </div>
+  </body>
 
 </html>

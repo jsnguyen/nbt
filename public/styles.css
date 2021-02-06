@@ -10,52 +10,40 @@
   font-family: "Courier Prime";
 } 
 
-body {
-  margin: 0px;
-  border: 0;
+html {
+  height: 100%;
   background-color: #000000;
   color: #FFFFFF;
 }
 
+body {
+  margin: 0;
+  border: 0;
+  min-height: 100%;
+}
+
 canvas {
-  padding: 0;
-  margin-top: auto;
-  margin-bottom: 2%;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  border-radius: 2px;
+  display: inline;
+  width: 100%;
+  max-width: 1000px;
+  max-height: 45vh;
 }
 
-/**********************/
-/* Progress Indicator */
-/**********************/
-
-.progressIndicators{
-  margin-top: 2%;
-  margin-bottom: auto;
-  margin-left: auto;
-  margin-right: auto;
-  display: table;
-  width: 90%;
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%; 
 }
 
-.progressIndicatorPercentage {
-  float: left;
-  text-align: left;
-  width: calc(100%/3);
+.canvasContainer {
+  width: 100%;
+  text-align:center;
 }
 
-.progressIndicatorTime{
-  float: left;
-  text-align: center;
-  width: calc(100%/3);
-}
-
-.progressIndicatorNumber {
-  float: left;
-  text-align: right;
-  width: calc(100%/3);
+.contentFiller{
+  height: 200px;
 }
 
 /****************/
@@ -63,66 +51,97 @@ canvas {
 /****************/
 
 .progressBarBackground {
-  margin: auto;
-  width: 90%;
-  background-color: #ddd;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  height: 36vh;
+  width: 20px;
+  background-color: white;
+  border-radius: 5px;
+  margin: 20px;
 }
 
 .progressBar{
-  width: 0%;
-  height: 10px;
-  background-color: #008000;
+  width: 20px;
+  height: 0%;
+  background-color: white;
   color: white;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+  border-radius: 5px;
+  margin: 20px;
 }
 
 /************/
 /* Bar Menu */
 /************/
 
-.barMenuRow{
-  display: flex;
-  justify-content: space-between;
-  margin: 0 auto;
-  width: 90%;
-  background-color: #696969;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
+.barMenu{
+  width: 100%;
+  max-width: 1000px;
 }
 
-.cameraConnectedDot{
-  display: inline-block;
-  background-color: rgb(0,0,0,0);
-  color: white;
-  padding: 10px;
+.barMenuContent {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
 }
 
 .cameraParameters{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  width: 100%;
+  border: solid 1px white;
 }
-
 
 .cameraSetting {
-  display: inline-block;
-  margin: 0 auto;
-  padding: 10px;
+  flex: 1;
+  margin: 10px auto;
+  font-size:1.6em;
 }
 
-.barMenuButtons{
+.barMenuInput{
+  display: flex;
+  flex-direction: column;
+  margin: 20px;
+  width: 50%;
 }
 
 .barMenuButton{
-  border: none; /* this seems to be problematic in alignment */
-  background-color: rgb(0,0,0,0);
+  width: 12vh;
+  height: 12vh;
+}
+
+.barMenuButton button{
+  border: solid 1px white;
   color: white;
-  padding: 10px;
+  background-color: transparent;
+  margin: 0 auto;
+  text-align:center;
   cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.barMenuButtonRow{
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
 }
 
 .barMenuButton:hover {
   background-color: #D3D3D3;
+}
+
+.progressIndicator {
+  margin: 5px;
+}
+
+.fa {
+  margin: 10px auto;
+  transform: scale(7,7);
+}
+
+.faSmall {
+  transform: scale(2,2);
 }
 
 /*********/
@@ -141,102 +160,39 @@ canvas {
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  -webkit-animation-name: fadeIn; /* Fade in the background */
-  -webkit-animation-duration: 0.4s;
-  animation-name: fadeIn;
-  animation-duration: 0.4s
 }
 
 .timelapseSettingsModalContent{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
   margin: auto;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
   bottom: 0;
   background-color: #696969;
-  width: 90%;
-  -webkit-animation-name: slideIn;
-  -webkit-animation-duration: 0.4s;
-  animation-name: slideIn;
-  animation-duration: 0.4s
-}
-
-.timelapseSettingsModalHeader {
-  margin: auto;
-  padding: 2px 16px;
-  background-color: #708090;
-  color: white;
-}
-
-.timelapseSettingsCloseButton {
-  color: white;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.timelapseModalHeaderTitle {
-  margin: 1%;
-  color: #FFFFFF;
-}
-
-.timelapseSettingsModalBody {
-  margin: 0 auto;
-  padding: 2px 16px;
-  color: black;
-}
-
-.timelapseSettingsCloseButton:hover,
-.timelapseSettingsCloseButton:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-@-webkit-keyframes slideIn {
-  from {bottom: -300px; opacity: 0}
-  to {bottom: 0; opacity: 1}
-}
-
-@keyframes slideIn {
-  from {bottom: -300px; opacity: 0}
-  to {bottom: 0; opacity: 1}
-}
-
-@-webkit-keyframes fadeIn {
-  from {opacity: 0}
-  to {opacity: 1}
-}
-
-@keyframes fadeIn {
-  from {opacity: 0}
-  to {opacity: 1}
+  width: 50%;
+  height: 25%;
 }
 
 .timelapseSettingsRow {
-  display: block;
-  margin: 0 auto;
-  width: 90%;
   color: white;
   background-color: #696969;
+  text-align: center;
 }
 
 .timelapseSetting {
-  display: inline-block;
+  width: 100%
   margin: 0 auto;
   padding: 10px;
 }
 
 .timelapseSettingsInput {
-  width: 100px;
+  width: 90%;
   padding: 10px;
   text-align: center;
-  background:#f8f8f8;
+  background: #f8f8f8;
   border:1px solid rgba(0, 0, 0, 0.075);
   color:#727272 !important;
-  font-size:12px;
-  -webkit-transition: all 0.4s;
-  -moz-transition: all 0.4s;
-  transition: all 0.4s;
+  font-size:0.8em;
 }
 
