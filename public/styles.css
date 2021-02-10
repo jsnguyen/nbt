@@ -167,32 +167,28 @@ canvas {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-  margin: auto;
   bottom: 0;
   background-color: #696969;
-  width: 50%;
-  height: 25%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .timelapseSettingsRow {
-  color: white;
-  background-color: #696969;
   text-align: center;
 }
 
 .timelapseSetting {
-  width: 100%
-  margin: 0 auto;
-  padding: 10px;
+  font-size: 2.0em;
+  padding: 20px;
 }
 
 .timelapseSettingsInput {
   width: 90%;
+  height: 200px;
   padding: 10px;
   text-align: center;
-  background: #f8f8f8;
-  border:1px solid rgba(0, 0, 0, 0.075);
-  color:#727272 !important;
-  font-size:0.8em;
+  border: none;
+  font-size: 2.0em;
 }
 
