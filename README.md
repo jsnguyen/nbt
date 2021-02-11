@@ -2,7 +2,7 @@
 
 NBT is a Node.js based webserver controller for taking timelapses from an attached PTP camera. Needs gphoto2.
 
-<img src="nbt_pic.jpg" alt="NBT setup" width="200"/>
+<img src="nbt_pic.jpg" alt="NBT setup" width="300"/>
 
 In my experience I've found it frustrating to take a multi-hour timelapses, only to find that the image is consistently underexposed or out of focus. NBT tries to solve these issues by letting you see the timelapse on your mobile device as it's running.
 
@@ -10,7 +10,7 @@ If all this seems like a lot of work just to see the timelapse as it's happening
 
 This was designed to run on a Raspberry Pi, broadcasting its own wifi network. You can connect to this network and load the Node.js server and see the timelapse progressing. You can also control the timelapse settings from any mobile device with a browser (but this is optimized for smartphones). The Node.js server loads on startup of the RPi.
 
-<img src="nbt_pic.jpg" alt="NBT interface" width="200"/>
+<img src="nbt_interface.jpg" alt="NBT interface" width="300"/>
 
 ## Notes
 
