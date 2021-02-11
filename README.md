@@ -10,7 +10,7 @@ If all this seems like a lot of work just to see the timelapse as it's happening
 
 This was designed to run on a Raspberry Pi, broadcasting its own wifi network. You can connect to this network and load the Node.js server and see the timelapse progressing. You can also control the timelapse settings from any mobile device with a browser (but this is optimized for smartphones). The Node.js server loads on startup of the RPi.
 
-<img src="nbt_interface.jpg" alt="NBT interface" width="300"/>
+<img src="interface_pic.jpg" alt="NBT interface" width="300"/>
 
 ## Notes
 
